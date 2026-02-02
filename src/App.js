@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import RoomsManager from './components/RoomsManager';
 import SlotsManager from './components/SlotsManager';
 import PeopleManager from './components/PeopleManager';
-import RulesManager from './components/RulesManager';
 import ReviewPanel from './components/ReviewPanel';
 import RosterView from './components/RosterView';
 import PDFExportButton from './pdf/PDFExport';
@@ -12,7 +11,6 @@ import {
   loadSlots, saveSlots,
   loadSlotRooms, saveSlotRooms,
   loadPeople, savePeople,
-  loadRules, saveRules,
   loadRoster, saveRoster
 } from './storage/localStorage';
 import './App.css';
@@ -23,7 +21,6 @@ function App() {
   const [slots, setSlots] = useState([]);
   const [slotRooms, setSlotRooms] = useState({});
   const [people, setPeople] = useState([]);
-  const [rules, setRules] = useState({});
   const [generatedRoster, setGeneratedRoster] = useState(null);
   const [currentView, setCurrentView] = useState('setup');
   const [isLoaded, setIsLoaded] = useState(false);
@@ -34,7 +31,6 @@ function App() {
     setSlots(loadSlots());
     setSlotRooms(loadSlotRooms());
     setPeople(loadPeople());
-    setRules(loadRules());
     setGeneratedRoster(loadRoster());
     setIsLoaded(true);
   }, []);
@@ -65,12 +61,6 @@ function App() {
   }, [people, isLoaded]);
 
   useEffect(() => {
-    if (isLoaded) {
-      saveRules(rules);
-    }
-  }, [rules, isLoaded]);
-
-  useEffect(() => {
     if (generatedRoster && isLoaded) {
       saveRoster(generatedRoster);
     }
@@ -79,7 +69,7 @@ function App() {
   // Generate the roster
   const handleGenerateRoster = () => {
     try {
-      const roster = generateRoster(slots, slotRooms, rooms, people, rules);
+      const roster = generateRoster(slots, slotRooms, rooms, people);
       setGeneratedRoster(roster);
       setCurrentView('roster');
       alert('Roster generated successfully!');
@@ -115,7 +105,6 @@ function App() {
             slots={slots}
             rooms={rooms}
             people={people}
-            rules={rules}
           />
         </div>
       </div>
@@ -132,7 +121,7 @@ function App() {
       <main className="app-main">
         <section id="exam-structure">
           <div className="section-header">
-            <h2>1️⃣ Exam Structure Setup</h2>
+            <h2> Exam Structure Setup</h2>
             <p>Define rooms and exam slots</p>
           </div>
           <RoomsManager rooms={rooms} setRooms={setRooms} />
@@ -147,23 +136,15 @@ function App() {
 
         <section id="people-setup">
           <div className="section-header">
-            <h2>2️⃣ People Setup</h2>
-            <p>Add invigilators (staff and faculty)</p>
+            <h2> People Setup</h2>
+            <p>Add invigilators (staff and faculty with duty limits)</p>
           </div>
           <PeopleManager people={people} setPeople={setPeople} />
         </section>
 
-        <section id="rules-setup">
-          <div className="section-header">
-            <h2>3️⃣ Duty Rules</h2>
-            <p>Configure duty limits per faculty sub-role</p>
-          </div>
-          <RulesManager rules={rules} setRules={setRules} />
-        </section>
-
         <section id="review">
           <div className="section-header">
-            <h2>4️⃣ Review & Generate</h2>
+            <h2> Review & Generate</h2>
             <p>Review your setup and generate the roster</p>
           </div>
           <ReviewPanel
@@ -171,7 +152,6 @@ function App() {
             slots={slots}
             slotRooms={slotRooms}
             people={people}
-            rules={rules}
             onGenerate={handleGenerateRoster}
             generatedRoster={generatedRoster}
           />
