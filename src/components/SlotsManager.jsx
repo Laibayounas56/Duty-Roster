@@ -167,10 +167,10 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                         className="icon-btn" 
                         onClick={() => handleEdit(slot)}
                       >
-                        ✏️ Edit
+                        ✏️
                       </button>
                       <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(slot.id)}>
-                        🗑️ Delete
+                        🗑️
                       </button>
                     </div>
                   </td>

@@ -145,10 +145,10 @@ const PeopleManager = ({ people, setPeople }) => {
                       <td>
                         <div className="action-buttons">
                           <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(person)}>
-                            ✏️ Edit
-                          </button>
-                          <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(person.id)}>
-                            🗑️ Delete
+                            ✏️
+                            </button>
+                            <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(person.id)}>
+                            🗑️
                           </button>
                         </div>
                       </td>
@@ -202,10 +202,10 @@ const PeopleManager = ({ people, setPeople }) => {
                       <td>
                         <div className="action-buttons">
                           <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(person)}>
-                            ✏️ Edit
+                            ✏️
                           </button>
                           <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(person.id)}>
-                            🗑️ Delete
+                            🗑️
                           </button>
                         </div>
                       </td>

@@ -26,11 +26,12 @@ const RosterView = ({ rosterData, slots, rooms, people, onExportPDF, onBack }) =
   });
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 24px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', minHeight: '100vh' }}>
+    <div style={{ background: 'linear-gradient(180deg, #F1F5F9 0%, #E2E8F0 100%)', minHeight: '100vh', paddingBottom: '48px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '48px 24px', width: '100%' }}>
       {/* Header */}
       <div className="card">
         <div className="card-header">
-          <h1 className="card-title" style={{ fontSize: '24px' }}>📋 Generated Roster</h1>
+          <h1 className="card-title" style={{ fontSize: '22px' }}>📋 Generated Roster</h1>
           <div style={{ display: 'flex', gap: '12px' }}>
             <button className="btn btn-success" onClick={onExportPDF}>
               📄 Export PDF
@@ -44,28 +45,31 @@ const RosterView = ({ rosterData, slots, rooms, people, onExportPDF, onBack }) =
         {/* Stats */}
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
           gap: '20px'
         }}>
-          <div style={{ textAlign: 'center', padding: '20px', background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', borderRadius: '12px', border: '2px solid #93c5fd' }}>
-            <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#1e40af' }}>
+          <div style={{ textAlign: 'center', padding: '28px', background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', borderRadius: '12px', border: '2px solid #BFDBFE', boxShadow: '0 4px 6px rgba(59, 130, 246, 0.1)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '80px', opacity: '0.1' }}>📊</div>
+            <div style={{ fontSize: '42px', fontWeight: '800', color: '#1E40AF', position: 'relative', zIndex: 1 }}>
               {totalAssignments}
             </div>
-            <div style={{ fontSize: '13px', color: '#1e3a8a', fontWeight: '600', marginTop: '4px' }}>Total Assignments</div>
+            <div style={{ fontSize: '12px', color: '#1E3A8A', fontWeight: '700', marginTop: '10px', textTransform: 'uppercase', letterSpacing: '1px', position: 'relative', zIndex: 1 }}>Total Assignments</div>
           </div>
           
-          <div style={{ textAlign: 'center', padding: '20px', background: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', borderRadius: '12px', border: '2px solid #6ee7b7' }}>
-            <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#065f46' }}>
+          <div style={{ textAlign: 'center', padding: '28px', background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)', borderRadius: '12px', border: '2px solid #A7F3D0', boxShadow: '0 4px 6px rgba(16, 185, 129, 0.1)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '80px', opacity: '0.1' }}>✔️</div>
+            <div style={{ fontSize: '42px', fontWeight: '800', color: '#059669', position: 'relative', zIndex: 1 }}>
               {completeAssignments}
             </div>
-            <div style={{ fontSize: '13px', color: '#064e3b', fontWeight: '600', marginTop: '4px' }}>Complete</div>
+            <div style={{ fontSize: '12px', color: '#065F46', fontWeight: '700', marginTop: '10px', textTransform: 'uppercase', letterSpacing: '1px', position: 'relative', zIndex: 1 }}>Complete</div>
           </div>
           
-          <div style={{ textAlign: 'center', padding: '20px', background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', borderRadius: '12px', border: '2px solid #fcd34d' }}>
-            <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#92400e' }}>
+          <div style={{ textAlign: 'center', padding: '28px', background: 'linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%)', borderRadius: '12px', border: '2px solid #FDE68A', boxShadow: '0 4px 6px rgba(245, 158, 11, 0.1)', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: '-20px', right: '-20px', fontSize: '80px', opacity: '0.1' }}>⏳</div>
+            <div style={{ fontSize: '42px', fontWeight: '800', color: '#D97706', position: 'relative', zIndex: 1 }}>
               {pendingAssignments}
             </div>
-            <div style={{ fontSize: '13px', color: '#78350f', fontWeight: '600', marginTop: '4px' }}>Pending</div>
+            <div style={{ fontSize: '12px', color: '#92400E', fontWeight: '700', marginTop: '10px', textTransform: 'uppercase', letterSpacing: '1px', position: 'relative', zIndex: 1 }}>Pending</div>
           </div>
         </div>
       </div>
@@ -79,15 +83,19 @@ const RosterView = ({ rosterData, slots, rooms, people, onExportPDF, onBack }) =
 
         return (
           <div key={slot.id} className="card">
-            <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: '#1f2937' }}>
-              {slot.label}
-            </h2>
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '15px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>
-                📅 {formatDateHuman(slot.date)}
-              </div>
-              <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>
-                {getDayName(slot.date)} | ⏰ {slot.startTime} - {slot.endTime}
+            <div style={{ background: 'linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%)', padding: '20px', margin: '-32px -32px 24px -32px', borderRadius: '12px 12px 0 0', borderBottom: '3px solid #3B82F6' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '10px', color: '#1E3A8A' }}>
+                {slot.label}
+              </h2>
+              <div style={{ marginBottom: '0' }}>
+                <div style={{ fontSize: '15px', fontWeight: '600', color: '#0F172A', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  📅 {formatDateHuman(slot.date)}
+                </div>
+                <div style={{ fontSize: '13px', color: '#64748B', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span>{getDayName(slot.date)}</span>
+                  <span style={{ color: '#CBD5E1' }}>|</span>
+                  <span>⏰ {slot.startTime} - {slot.endTime}</span>
+                </div>
               </div>
             </div>
 
@@ -164,6 +172,7 @@ const RosterView = ({ rosterData, slots, rooms, people, onExportPDF, onBack }) =
               ))}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

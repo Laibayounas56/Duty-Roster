@@ -83,10 +83,10 @@ const RoomsManager = ({ rooms, setRooms }) => {
                 <td>
                   <div className="action-buttons">
                     <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(room)}>
-                      ✏️ Edit
+                      ✏️
                     </button>
                     <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(room.id)}>
-                      🗑️ Delete
+                      🗑️
                     </button>
                   </div>
                 </td>

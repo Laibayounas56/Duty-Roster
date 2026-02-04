@@ -89,8 +89,8 @@ const RulesManager = ({ rules, setRules }) => {
                   )}
                 </td>
                 <td>
-                  <button className="icon-btn" onClick={() => handleDelete(rule.subRole)}>
-                    🗑️ Delete
+                  <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(rule.subRole)}>
+                    🗑️
                   </button>
                 </td>
               </tr>
