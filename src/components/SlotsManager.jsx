@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './styles.css';
+import { formatDateHuman, getDayName, structuredToISODate, isoDateToStructured, getMonthOptions } from '../utils/dateHelpers';
 
 const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [showModal, setShowModal] = useState(false);
@@ -8,18 +9,24 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [editMode, setEditMode] = useState(false);
   const [editingSlotId, setEditingSlotId] = useState(null);
   
-  const [date, setDate] = useState('');
+  const [day, setDay] = useState('');
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [label, setLabel] = useState('');
   
+  const monthOptions = getMonthOptions();
+  
   const [selectedRooms, setSelectedRooms] = useState([]);
 
   const handleAdd = () => {
-    if (!date || !startTime || !endTime || !label.trim()) {
+    if (!day || !month || !year || !startTime || !endTime || !label.trim()) {
       alert('Please fill in all fields');
       return;
     }
+    
+    const date = structuredToISODate(day, month, year);
     
     if (editMode) {
       // Update existing slot
@@ -48,7 +55,10 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     setEditMode(true);
     setEditingSlotId(slot.id);
     setLabel(slot.label);
-    setDate(slot.date);
+    const { day: d, month: m, year: y } = isoDateToStructured(slot.date);
+    setDay(d);
+    setMonth(m);
+    setYear(y);
     setStartTime(slot.startTime);
     setEndTime(slot.endTime);
     setShowModal(true);
@@ -89,7 +99,9 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   };
 
   const resetForm = () => {
-    setDate('');
+    setDay('');
+    setMonth('');
+    setYear('');
     setStartTime('');
     setEndTime('');
     setLabel('');
@@ -132,7 +144,10 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
               return (
                 <tr key={slot.id}>
                   <td><strong>{slot.label}</strong></td>
-                  <td>{new Date(slot.date).toLocaleDateString()}</td>
+                  <td>
+                    <div style={{ fontWeight: '600' }}>{formatDateHuman(slot.date)}</div>
+                    <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>{getDayName(slot.date)}</div>
+                  </td>
                   <td>{slot.startTime} - {slot.endTime}</td>
                   <td>
                     <span className={`badge ${assignedCount > 0 ? 'badge-success' : 'badge-warning'}`}>
@@ -188,12 +203,41 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
 
             <div className="form-group">
               <label className="form-label">Date</label>
-              <input
-                type="date"
-                className="form-input"
-                value={date}
-                onChange={e => setDate(e.target.value)}
-              />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={day}
+                  onChange={e => setDay(e.target.value)}
+                  placeholder="Day"
+                  min="1"
+                  max="31"
+                  style={{ flex: '0 0 80px' }}
+                />
+                <span style={{ color: '#6b7280' }}>|</span>
+                <select
+                  className="form-input"
+                  value={month}
+                  onChange={e => setMonth(e.target.value)}
+                  style={{ flex: '0 0 100px' }}
+                >
+                  <option value="">Month</option>
+                  {monthOptions.map(m => (
+                    <option key={m.value} value={m.value}>{m.label}</option>
+                  ))}
+                </select>
+                <span style={{ color: '#6b7280' }}>|</span>
+                <input
+                  type="number"
+                  className="form-input"
+                  value={year}
+                  onChange={e => setYear(e.target.value)}
+                  placeholder="Year"
+                  min="2020"
+                  max="2099"
+                  style={{ flex: '0 0 100px' }}
+                />
+              </div>
             </div>
 
             <div className="form-group">
@@ -227,7 +271,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
               <button 
                 className="btn btn-primary" 
                 onClick={handleAdd}
-                disabled={!date || !startTime || !endTime || !label.trim()}
+                disabled={!day || !month || !year || !startTime || !endTime || !label.trim()}
               >
                 {editMode ? 'Update' : 'Add'}
               </button>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { PERSON_TYPES } from '../models/dataModels';
 import './styles.css';
+import { formatDateHuman, getDayName } from '../utils/dateHelpers';
 
 const RosterView = ({ rosterData, slots, rooms, people, onExportPDF, onBack }) => {
   const { roster, dutyCount } = rosterData;
@@ -81,8 +82,13 @@ const RosterView = ({ rosterData, slots, rooms, people, onExportPDF, onBack }) =
             <h2 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px', color: '#1f2937' }}>
               {slot.label}
             </h2>
-            <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '20px', fontWeight: '500' }}>
-              📅 {new Date(slot.date).toLocaleDateString()} | ⏰ {slot.startTime} - {slot.endTime}
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ fontSize: '15px', fontWeight: '600', color: '#1f2937', marginBottom: '4px' }}>
+                📅 {formatDateHuman(slot.date)}
+              </div>
+              <div style={{ fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>
+                {getDayName(slot.date)} | ⏰ {slot.startTime} - {slot.endTime}
+              </div>
             </div>
 
             <table className="table">
