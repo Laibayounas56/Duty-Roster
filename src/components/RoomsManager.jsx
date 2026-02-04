@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import ConfirmModal from './ConfirmModal';
 import './styles.css';
 
-const RoomsManager = ({ rooms, setRooms }) => {
+const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoster, setGeneratedRoster }) => {
   const [showModal, setShowModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [editingRoom, setEditingRoom] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const handleAdd = () => {
     if (!roomName.trim()) return;
@@ -38,9 +41,30 @@ const RoomsManager = ({ rooms, setRooms }) => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this room?')) {
-      setRooms(rooms.filter(r => r.id !== id));
+    setDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    // Remove room from rooms list
+    setRooms(rooms.filter(r => r.id !== deleteId));
+    
+    // Remove room from all slot room assignments
+    if (slotRooms && setSlotRooms) {
+      const updatedSlotRooms = {};
+      Object.keys(slotRooms).forEach(slotId => {
+        updatedSlotRooms[slotId] = slotRooms[slotId].filter(roomId => roomId !== deleteId);
+      });
+      setSlotRooms(updatedSlotRooms);
     }
+    
+    // Clear generated roster since room data has changed
+    if (generatedRoster && setGeneratedRoster) {
+      setGeneratedRoster(null);
+    }
+    
+    setShowConfirm(false);
+    setDeleteId(null);
   };
 
   const openAddModal = () => {
@@ -133,6 +157,14 @@ const RoomsManager = ({ rooms, setRooms }) => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showConfirm}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this room? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+      />
     </div>
   );
 };

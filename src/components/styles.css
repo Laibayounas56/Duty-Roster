@@ -41,6 +41,18 @@
   letter-spacing: -0.4px;
 }
 
+/* Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Buttons */
 .btn {
   padding: 12px 24px;

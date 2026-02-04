@@ -5,6 +5,7 @@ import PeopleManager from './components/PeopleManager';
 import ReviewPanel from './components/ReviewPanel';
 import RosterView from './components/RosterView';
 import PDFExportButton from './pdf/PDFExport';
+import SuccessNotification from './components/SuccessNotification';
 import { generateRoster } from './logic/generateRoster';
 import {
   loadRooms, saveRooms,
@@ -24,6 +25,9 @@ function App() {
   const [generatedRoster, setGeneratedRoster] = useState(null);
   const [currentView, setCurrentView] = useState('setup');
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [successDetails, setSuccessDetails] = useState('');
 
   // Load saved data when app starts
   useEffect(() => {
@@ -72,10 +76,14 @@ function App() {
       const roster = generateRoster(slots, slotRooms, rooms, people);
       setGeneratedRoster(roster);
       setCurrentView('roster');
-      alert('Roster generated successfully!');
+      setSuccessMessage('Roster Generated Successfully');
+      setSuccessDetails('');
+      setShowSuccess(true);
     } catch (error) {
       console.error('Error generating roster:', error);
-      alert('Error generating roster. Please check your data and try again.');
+      setSuccessMessage('Error Generating Roster');
+      setSuccessDetails('Please check your data and try again.');
+      setShowSuccess(true);
     }
   };
 
@@ -86,6 +94,13 @@ function App() {
   if (currentView === 'roster' && generatedRoster) {
     return (
       <div className="app-container">
+        {showSuccess && (
+          <SuccessNotification
+            message={successMessage}
+            details={successDetails}
+            onClose={() => setShowSuccess(false)}
+          />
+        )}
         <RosterView
           rosterData={generatedRoster}
           slots={slots}
@@ -113,6 +128,14 @@ function App() {
 
   return (
     <div className="app-container">
+      {showSuccess && (
+        <SuccessNotification
+          message={successMessage}
+          details={successDetails}
+          onClose={() => setShowSuccess(false)}
+        />
+      )}
+      
       <header className="app-header">
         <h1>🎓 Exam Duty Roster Management System</h1>
         <p>Manage exam invigilation roster with intelligent allocation</p>
@@ -124,7 +147,14 @@ function App() {
             <h2> Exam Structure Setup</h2>
             <p>Define rooms and exam slots</p>
           </div>
-          <RoomsManager rooms={rooms} setRooms={setRooms} />
+          <RoomsManager 
+            rooms={rooms} 
+            setRooms={setRooms}
+            slotRooms={slotRooms}
+            setSlotRooms={setSlotRooms}
+            generatedRoster={generatedRoster}
+            setGeneratedRoster={setGeneratedRoster}
+          />
           <SlotsManager 
             slots={slots} 
             setSlots={setSlots}

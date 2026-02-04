@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ConfirmModal from './ConfirmModal';
 import './styles.css';
 import { formatDateHuman, getDayName, structuredToISODate, isoDateToStructured, getMonthOptions } from '../utils/dateHelpers';
 
@@ -8,6 +9,8 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [currentSlot, setCurrentSlot] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editingSlotId, setEditingSlotId] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
   
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
@@ -22,8 +25,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
 
   const handleAdd = () => {
     if (!day || !month || !year || !startTime || !endTime || !label.trim()) {
-      alert('Please fill in all fields');
-      return;
+      return; // Silently prevent submission if incomplete
     }
     
     const date = structuredToISODate(day, month, year);
@@ -65,18 +67,27 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this slot?')) {
-      setSlots(slots.filter(s => s.id !== id));
-      // Remove slot room assignments
-      const newSlotRooms = { ...slotRooms };
-      delete newSlotRooms[id];
-      setSlotRooms(newSlotRooms);
-    }
+    setDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    setSlots(slots.filter(s => s.id !== deleteId));
+    // Remove slot room assignments
+    const newSlotRooms = { ...slotRooms };
+    delete newSlotRooms[deleteId];
+    setSlotRooms(newSlotRooms);
+    setShowConfirm(false);
+    setDeleteId(null);
   };
 
   const openRoomSelector = (slot) => {
     setCurrentSlot(slot);
-    setSelectedRooms(slotRooms[slot.id] || []);
+    // Filter out any room IDs that no longer exist in the rooms array
+    const validRoomIds = (slotRooms[slot.id] || []).filter(roomId => 
+      rooms.some(room => room.id === roomId)
+    );
+    setSelectedRooms(validRoomIds);
     setShowRoomSelector(true);
   };
 
@@ -348,6 +359,14 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showConfirm}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this slot? All room assignments for this slot will also be removed."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+      />
     </div>
   );
 };

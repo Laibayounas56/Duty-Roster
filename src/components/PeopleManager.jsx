@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { PERSON_TYPES, FACULTY_SUB_ROLES, DAYS_OF_WEEK } from '../models/dataModels';
+import ConfirmModal from './ConfirmModal';
+import { formatDaysDisplay } from '../utils/daysHelper';
 import './styles.css';
 
 const PeopleManager = ({ people, setPeople }) => {
   const [showModal, setShowModal] = useState(false);
   const [editingPerson, setEditingPerson] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
   
   const [name, setName] = useState('');
   const [type, setType] = useState(PERSON_TYPES.FACULTY);
@@ -19,8 +23,7 @@ const PeopleManager = ({ people, setPeople }) => {
     if (type === PERSON_TYPES.FACULTY) {
       const dutyCountNum = parseInt(maxDutyCount, 10);
       if (!maxDutyCount || isNaN(dutyCountNum) || dutyCountNum <= 0) {
-        alert('Please enter a valid maximum duty count (positive number) for Faculty members.');
-        return;
+        return; // Silently prevent submission if invalid
       }
     }
     
@@ -66,9 +69,14 @@ const PeopleManager = ({ people, setPeople }) => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this person?')) {
-      setPeople(people.filter(p => p.id !== id));
-    }
+    setDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    setPeople(people.filter(p => p.id !== deleteId));
+    setShowConfirm(false);
+    setDeleteId(null);
   };
 
   const toggleDay = (day) => {
@@ -191,10 +199,7 @@ const PeopleManager = ({ people, setPeople }) => {
                       </td>
                       <td>{person.subRole || '-'}</td>
                       <td>
-                        {person.preferredDays.length > 0 
-                          ? person.preferredDays.map(d => d.substring(0, 3)).join(', ')
-                          : 'None'
-                        }
+                        {formatDaysDisplay(person.preferredDays)}
                       </td>
                       <td>
                         <span className="badge badge-info">{person.maxDutyCount || 0}</span>
@@ -314,6 +319,14 @@ const PeopleManager = ({ people, setPeople }) => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showConfirm}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this person? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+      />
     </div>
   );
 };
