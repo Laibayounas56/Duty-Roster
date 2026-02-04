@@ -1,7 +1,7 @@
 // Types and constants for our data
 
 export const PERSON_TYPES = {
-  LOWER_STAFF: 'Lower Staff',
+  STAFF: 'Staff',
   FACULTY: 'Faculty'
 };
 
@@ -19,8 +19,7 @@ export const DAYS_OF_WEEK = [
   'Wednesday',
   'Thursday',
   'Friday',
-  'Saturday',
-  'Sunday'
+  'Saturday'
 ];
 
 // Helper functions to create data objects
@@ -37,18 +36,16 @@ export const createSlot = (date, startTime, endTime, label) => ({
   label
 });
 
-export const createPerson = (name, type, subRole = null, preferredDays = []) => ({
+export const createPerson = (name, type, subRole = null, preferredDays = [], maxDutyCount = null) => ({
   id: Date.now() + Math.random(),
   name,
   type,
   subRole, // Only for Faculty
-  preferredDays // Only for Faculty
+  preferredDays, // Only for Faculty
+  maxDutyCount // Only for Faculty - maximum duties they can be assigned
 });
 
-export const createDutyRule = (subRole, maxDuties) => ({
-  subRole,
-  maxDuties // null or undefined means unlimited
-});
+
 
 // Check availability and dates
 export const getDayOfWeek = (dateString) => {
@@ -58,8 +55,8 @@ export const getDayOfWeek = (dateString) => {
 };
 
 export const isPersonAvailableOnDay = (person, dateString) => {
-  if (person.type === PERSON_TYPES.LOWER_STAFF) {
-    return true; // Lower staff available all days
+  if (person.type === PERSON_TYPES.STAFF) {
+    return true; // Staff available all days
   }
   
   const dayOfWeek = getDayOfWeek(dateString);

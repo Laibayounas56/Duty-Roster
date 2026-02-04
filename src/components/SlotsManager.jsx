@@ -5,6 +5,8 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [showModal, setShowModal] = useState(false);
   const [showRoomSelector, setShowRoomSelector] = useState(false);
   const [currentSlot, setCurrentSlot] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editingSlotId, setEditingSlotId] = useState(null);
   
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -19,17 +21,37 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
       return;
     }
     
-    const newSlot = {
-      id: Date.now() + Math.random(),
-      date,
-      startTime,
-      endTime,
-      label: label.trim()
-    };
+    if (editMode) {
+      // Update existing slot
+      setSlots(slots.map(s => 
+        s.id === editingSlotId 
+          ? { ...s, date, startTime, endTime, label: label.trim() }
+          : s
+      ));
+    } else {
+      // Add new slot
+      const newSlot = {
+        id: Date.now() + Math.random(),
+        date,
+        startTime,
+        endTime,
+        label: label.trim()
+      };
+      setSlots([...slots, newSlot]);
+    }
     
-    setSlots([...slots, newSlot]);
     resetForm();
     setShowModal(false);
+  };
+
+  const handleEdit = (slot) => {
+    setEditMode(true);
+    setEditingSlotId(slot.id);
+    setLabel(slot.label);
+    setDate(slot.date);
+    setStartTime(slot.startTime);
+    setEndTime(slot.endTime);
+    setShowModal(true);
   };
 
   const handleDelete = (id) => {
@@ -71,6 +93,8 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     setStartTime('');
     setEndTime('');
     setLabel('');
+    setEditMode(false);
+    setEditingSlotId(null);
   };
 
   const closeModal = () => {
@@ -124,6 +148,12 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                       >
                         🏢 Rooms
                       </button>
+                      <button 
+                        className="icon-btn" 
+                        onClick={() => handleEdit(slot)}
+                      >
+                        ✏️ Edit
+                      </button>
                       <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(slot.id)}>
                         🗑️ Delete
                       </button>
@@ -141,7 +171,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3 className="modal-title">Add Exam Slot</h3>
+              <h3 className="modal-title">{editMode ? 'Edit Exam Slot' : 'Add Exam Slot'}</h3>
               <button className="modal-close" onClick={closeModal}>×</button>
             </div>
 
@@ -199,7 +229,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                 onClick={handleAdd}
                 disabled={!date || !startTime || !endTime || !label.trim()}
               >
-                Add
+                {editMode ? 'Update' : 'Add'}
               </button>
             </div>
           </div>
