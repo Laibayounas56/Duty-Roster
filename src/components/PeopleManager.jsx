@@ -101,7 +101,7 @@ const PeopleManager = ({ people, setPeople }) => {
   return (
     <div className="card">
       <div className="card-header">
-        <h2 className="card-title">👥 People (Invigilators)</h2>
+        <h2 className="card-title"> People (Invigilators)</h2>
         <button className="btn btn-primary" onClick={openAddModal}>
           + Add Person
         </button>
@@ -116,7 +116,7 @@ const PeopleManager = ({ people, setPeople }) => {
           {/* Staff Table */}
           <div style={{ marginBottom: '24px' }}>
             <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#1f2937', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              👔 Staff Members
+               Staff Members
             </h3>
             {people.filter(p => p.type === PERSON_TYPES.STAFF).length === 0 ? (
               <div style={{ padding: '16px', background: '#f9fafb', borderRadius: '8px', color: '#6b7280', fontSize: '14px' }}>
@@ -162,7 +162,7 @@ const PeopleManager = ({ people, setPeople }) => {
           {/* Faculty Table */}
           <div>
             <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#1f2937', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              🎓 Faculty Members
+               Faculty Members
             </h3>
             {people.filter(p => p.type === PERSON_TYPES.FACULTY).length === 0 ? (
               <div style={{ padding: '16px', background: '#f9fafb', borderRadius: '8px', color: '#6b7280', fontSize: '14px' }}>

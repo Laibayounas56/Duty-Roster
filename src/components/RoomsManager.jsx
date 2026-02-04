@@ -58,7 +58,7 @@ const RoomsManager = ({ rooms, setRooms }) => {
   return (
     <div className="card">
       <div className="card-header">
-        <h2 className="card-title">📍 Rooms</h2>
+        <h2 className="card-title">Rooms</h2>
         <button className="btn btn-primary" onClick={openAddModal}>
           + Add Room
         </button>

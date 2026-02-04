@@ -117,7 +117,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   return (
     <div className="card">
       <div className="card-header">
-        <h2 className="card-title">📅 Exam Slots</h2>
+        <h2 className="card-title"> Exam Slots</h2>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           + Add Slot
         </button>
@@ -289,21 +289,52 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
               <button className="modal-close" onClick={() => setShowRoomSelector(false)}>×</button>
             </div>
 
-            <div style={{ marginBottom: '16px' }}>
-              <strong>Selected: {selectedRooms.length} / {rooms.length}</strong>
+            <div style={{ marginBottom: '20px', color: '#64748B', fontSize: '14px', fontWeight: '600' }}>
+              Selected: {selectedRooms.length} / {rooms.length}
             </div>
 
-            <div className="checkbox-group">
-              {rooms.map(room => (
-                <label key={room.id} className="checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={selectedRooms.includes(room.id)}
-                    onChange={() => toggleRoom(room.id)}
-                  />
-                  {room.name}
-                </label>
-              ))}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              {rooms.map(room => {
+                const isSelected = selectedRooms.includes(room.id);
+                return (
+                  <div
+                    key={room.id}
+                    onClick={() => toggleRoom(room.id)}
+                    style={{
+                      padding: '16px 20px',
+                      borderRadius: '8px',
+                      border: isSelected ? '2px solid #3B82F6' : '2px solid #E2E8F0',
+                      background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                      color: isSelected ? '#1E3A8A' : '#64748B',
+                      fontWeight: isSelected ? '700' : '500',
+                      fontSize: '14px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      userSelect: 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor = '#93C5FD';
+                        e.currentTarget.style.background = '#F8FAFC';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor = '#E2E8F0';
+                        e.currentTarget.style.background = '#FFFFFF';
+                      }
+                    }}
+                  >
+                    {room.name}
+                  </div>
+                );
+              })}
             </div>
 
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '24px' }}>
