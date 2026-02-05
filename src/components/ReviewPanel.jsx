@@ -12,23 +12,18 @@ const ReviewPanel = ({
   // Calculate completeness
   const hasRooms = rooms.length > 0;
   const hasSlots = slots.length > 0;
-  const hasRoomAssignments = slots.every(slot => 
+  const hasRoomAssignments = hasSlots && slots.every(slot => 
     slotRooms[slot.id] && slotRooms[slot.id].length > 0
   );
   const hasPeople = people.length > 0;
-  
-  // Check that all faculty members have maxDutyCount set
-  const faculty = people.filter(p => p.type === 'Faculty');
-  const allFacultyHaveLimits = faculty.length === 0 || faculty.every(f => f.maxDutyCount > 0);
 
-  const isComplete = hasRooms && hasSlots && hasRoomAssignments && hasPeople && allFacultyHaveLimits;
+  const isComplete = hasRooms && hasSlots && hasRoomAssignments && hasPeople;
 
   const checklistItems = [
     { label: 'Rooms added', complete: hasRooms },
     { label: 'Slots added', complete: hasSlots },
     { label: 'Rooms assigned to slots', complete: hasRoomAssignments },
-    { label: 'People added', complete: hasPeople },
-    { label: 'Faculty duty limits set', complete: allFacultyHaveLimits }
+    { label: 'People added', complete: hasPeople }
   ];
 
   const totalRoomAssignments = Object.values(slotRooms).reduce((sum, rooms) => sum + rooms.length, 0);
