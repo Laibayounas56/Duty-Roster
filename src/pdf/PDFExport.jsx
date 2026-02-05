@@ -3,298 +3,489 @@ import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-
 import { PERSON_TYPES } from '../models/dataModels';
 import { formatDateHuman, getDayName } from '../utils/dateHelpers';
 
-// PDF Styles
+// PDF Styles - Professional University Format
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 50,
+    paddingBottom: 70,
     fontSize: 10,
     fontFamily: 'Helvetica',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  // Header styles
+  mainTitle: {
+    fontSize: 24,
+    fontWeight: 800,
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  headerDivider: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#000',
+    marginBottom: 25,
+  },
+  // Slot page header
+  dayDateHeader: {
+    fontSize: 14,
+    fontWeight: 800,
+    marginBottom: 8,
+  },
+  slotTimeHeader: {
+    fontSize: 13,
+    fontWeight: 700,
+    marginBottom: 5,
+  },
+  // Section headings
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 800,
     marginBottom: 20,
     textAlign: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: '#000',
+    paddingBottom: 8,
   },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
-    color: '#333',
-  },
+  // Table styles
   table: {
     display: 'table',
     width: '100%',
-    marginBottom: 20,
-    borderStyle: 'solid',
-    borderWidth: 1,
-    borderColor: '#bfbfbf',
+    marginTop: 5,
+    borderWidth: 1.5,
+    borderColor: '#000',
+  },
+  tableHeaderRow: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    borderBottomWidth: 1.5,
+    borderBottomColor: '#000',
   },
   tableRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#bfbfbf',
+    borderBottomColor: '#000',
   },
-  tableHeaderRow: {
+  tableRowLast: {
     flexDirection: 'row',
-    backgroundColor: '#f0f0f0',
-    borderBottomWidth: 1,
-    borderBottomColor: '#bfbfbf',
   },
   tableCell: {
-    padding: 5,
-    fontSize: 9,
-  },
-  slotHeader: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginTop: 15,
-    marginBottom: 8,
-    backgroundColor: '#e3f2fd',
     padding: 8,
+    fontSize: 10,
+    borderRightWidth: 1,
+    borderRightColor: '#000',
+    lineHeight: 1.4,
   },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
+  tableCellLast: {
+    padding: 8,
+    fontSize: 10,
+    lineHeight: 1.4,
+  },
+  tableCellHeader: {
     padding: 10,
-    backgroundColor: '#f8f9fa',
+    fontSize: 11,
+    fontWeight: 700,
+    borderRightWidth: 1,
+    borderRightColor: '#000',
   },
-  statBox: {
-    alignItems: 'center',
+  tableCellHeaderLast: {
+    padding: 10,
+    fontSize: 11,
+    fontWeight: 700,
   },
-  statValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#007bff',
+  // Detail block styles
+  detailBlock: {
+    marginBottom: 25,
+    padding: 0,
   },
-  statLabel: {
-    fontSize: 8,
-    color: '#666',
-    marginTop: 2,
+  detailName: {
+    fontSize: 13,
+    fontWeight: 700,
+    marginBottom: 5,
   },
-  pageBreak: {
-    marginTop: 20,
-    pageBreakBefore: 'always',
+  detailInfo: {
+    fontSize: 10,
+    marginBottom: 12,
+  },
+  detailTable: {
+    display: 'table',
+    width: '100%',
+    marginTop: 5,
+    borderWidth: 1.5,
+    borderColor: '#000',
+  },
+  // Summary page styles
+  summaryContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: 30,
+    marginBottom: 40,
+  },
+  summaryCard: {
+    width: '48%',
+    marginBottom: 20,
+    padding: 15,
+    borderWidth: 1.5,
+    borderColor: '#000',
+    backgroundColor: '#f9f9f9',
+  },
+  summaryLabel: {
+    fontSize: 10,
+    marginBottom: 5,
+    color: '#333',
+  },
+  summaryValue: {
+    fontSize: 20,
+    fontWeight: 800,
+    color: '#000',
+  },
+  // Footer styles
+  footer: {
+    position: 'absolute',
+    bottom: 35,
+    left: 50,
+    right: 50,
+    textAlign: 'center',
+    fontSize: 9,
+    borderTopWidth: 1,
+    borderTopColor: '#000',
+    paddingTop: 8,
   },
 });
+
+// Reusable Page Header Component - Shows on Each Slot Page
+const SlotPageHeader = ({ day, date, slotLabel, slotTime }) => (
+  <View>
+    <Text style={styles.mainTitle}>EXAMINATION DUTY ROSTER</Text>
+    <View style={styles.headerDivider} />
+    <Text style={styles.dayDateHeader}>({day}, {date})</Text>
+    <Text style={styles.slotTimeHeader}>{slotLabel}</Text>
+    <Text style={styles.slotTimeHeader}>{slotTime}</Text>
+  </View>
+);
+
+// Summary Page Header Component
+const SummaryPageHeader = () => (
+  <View>
+    <Text style={styles.mainTitle}>EXAMINATION DUTY ROSTER</Text>
+    <View style={styles.headerDivider} />
+    <Text style={styles.sectionTitle}>ROSTER SUMMARY</Text>
+  </View>
+);
+
+// Summary Card Component
+const SummaryCard = ({ label, value }) => (
+  <View style={styles.summaryCard}>
+    <Text style={styles.summaryLabel}>{label}</Text>
+    <Text style={styles.summaryValue}>{value}</Text>
+  </View>
+);
+
+// Section Header Component
+const SectionPageHeader = ({ title }) => (
+  <View>
+    <Text style={styles.mainTitle}>EXAMINATION DUTY ROSTER</Text>
+    <View style={styles.headerDivider} />
+    <Text style={styles.sectionTitle}>{title}</Text>
+  </View>
+);
+
+// Page Footer Component
+const PageFooter = ({ pageNumber }) => (
+  <View style={styles.footer} fixed>
+    <Text>Page {pageNumber}</Text>
+  </View>
+);
+
+// Slot Table Component - Clean Table for Each Slot
+const SlotTable = ({ slotRoomAssignments, rooms, getRoomById, getPersonById }) => {
+  const roomIds = Object.keys(slotRoomAssignments);
+  
+  if (roomIds.length === 0) {
+    return <Text style={{ textAlign: 'center', marginTop: 20 }}>No assignments for this slot</Text>;
+  }
+
+  return (
+    <View style={styles.table} wrap={false}>
+      <View style={styles.tableHeaderRow}>
+        <Text style={[styles.tableCellHeader, { width: '18%' }]}>Room</Text>
+        <Text style={[styles.tableCellHeader, { width: '27%' }]}>Staff</Text>
+        <Text style={[styles.tableCellHeader, { width: '27%' }]}>Faculty 1</Text>
+        <Text style={[styles.tableCellHeaderLast, { width: '28%' }]}>Faculty 2</Text>
+      </View>
+      {roomIds.map((roomId, index) => {
+        const assignment = slotRoomAssignments[roomId];
+        const room = getRoomById(roomId);
+        const staff = assignment.staff ? getPersonById(assignment.staff) : null;
+        const faculty1 = assignment.faculty1 ? getPersonById(assignment.faculty1) : null;
+        const faculty2 = assignment.faculty2 ? getPersonById(assignment.faculty2) : null;
+        const isLast = index === roomIds.length - 1;
+
+        return (
+          <View key={roomId} style={isLast ? styles.tableRowLast : styles.tableRow}>
+            <Text style={[styles.tableCell, { width: '18%' }]}>
+              {room && room.name ? room.name : (rooms.length > 0 ? `ID: ${roomId}` : '—')}
+            </Text>
+            <Text style={[styles.tableCell, { width: '27%' }]}>{staff?.name || '—'}</Text>
+            <View style={[styles.tableCell, { width: '27%' }]}>
+              {faculty1 ? (
+                <View>
+                  <Text>{faculty1.name}</Text>
+                  {faculty1.subRole && <Text style={{ fontSize: 9 }}>({faculty1.subRole})</Text>}
+                </View>
+              ) : (
+                <Text>—</Text>
+              )}
+            </View>
+            <View style={[styles.tableCellLast, { width: '28%' }]}>
+              {faculty2 ? (
+                <View>
+                  <Text>{faculty2.name}</Text>
+                  {faculty2.subRole && <Text style={{ fontSize: 9 }}>({faculty2.subRole})</Text>}
+                </View>
+              ) : (
+                <Text>—</Text>
+              )}
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+};
+
+// Faculty Detail Block Component
+const FacultyDetailBlock = ({ person, duties, dutyCount }) => (
+  <View style={styles.detailBlock} wrap={false}>
+    <Text style={styles.detailName}>{person.name}</Text>
+    <Text style={styles.detailInfo}>
+      Designation: {person.subRole || 'Faculty'} | Total Duties: {dutyCount[person.id] || 0}
+    </Text>
+    <View style={styles.detailTable}>
+      <View style={styles.tableHeaderRow}>
+        <Text style={[styles.tableCellHeader, { width: '40%' }]}>Date</Text>
+        <Text style={[styles.tableCellHeader, { width: '35%' }]}>Time</Text>
+        <Text style={[styles.tableCellHeaderLast, { width: '25%' }]}>Room</Text>
+      </View>
+      {duties.map((duty, index) => {
+        const isLast = index === duties.length - 1;
+        return (
+          <View key={index} style={isLast ? styles.tableRowLast : styles.tableRow}>
+            <Text style={[styles.tableCell, { width: '40%' }]}>
+              {getDayName(duty.slot.date)}, {formatDateHuman(duty.slot.date)}
+            </Text>
+            <Text style={[styles.tableCell, { width: '35%' }]}>
+              {duty.slot.startTime} – {duty.slot.endTime}
+            </Text>
+            <Text style={[styles.tableCellLast, { width: '25%' }]}>{duty.room?.name || '—'}</Text>
+          </View>
+        );
+      })}
+    </View>
+  </View>
+);
+
+// Staff Detail Block Component
+const StaffDetailBlock = ({ person, duties, dutyCount }) => (
+  <View style={styles.detailBlock} wrap={false}>
+    <Text style={styles.detailName}>{person.name}</Text>
+    <Text style={styles.detailInfo}>
+      Role: {person.subRole || 'Staff'} | Total Duties: {dutyCount[person.id] || 0}
+    </Text>
+    <View style={styles.detailTable}>
+      <View style={styles.tableHeaderRow}>
+        <Text style={[styles.tableCellHeader, { width: '40%' }]}>Date</Text>
+        <Text style={[styles.tableCellHeader, { width: '35%' }]}>Time</Text>
+        <Text style={[styles.tableCellHeaderLast, { width: '25%' }]}>Room</Text>
+      </View>
+      {duties.map((duty, index) => {
+        const isLast = index === duties.length - 1;
+        return (
+          <View key={index} style={isLast ? styles.tableRowLast : styles.tableRow}>
+            <Text style={[styles.tableCell, { width: '40%' }]}>
+              {getDayName(duty.slot.date)}, {formatDateHuman(duty.slot.date)}
+            </Text>
+            <Text style={[styles.tableCell, { width: '35%' }]}>
+              {duty.slot.startTime} – {duty.slot.endTime}
+            </Text>
+            <Text style={[styles.tableCellLast, { width: '25%' }]}>{duty.room?.name || '—'}</Text>
+          </View>
+        );
+      })}
+    </View>
+  </View>
+);
 
 // PDF Document Component
 const RosterPDF = ({ rosterData, slots, rooms, people }) => {
   const { roster, dutyCount } = rosterData;
 
   const getPersonById = (id) => people.find(p => p.id === id);
-  const getRoomById = (id) => rooms.find(r => r.id === id);
+  const getRoomById = (id) => {
+    // Convert to number for comparison since roster uses numeric IDs
+    const numericId = typeof id === 'string' ? parseFloat(id) : id;
+    return rooms.find(r => r.id === numericId);
+  };
 
-  // Calculate stats
-  let totalAssignments = 0;
+  // Collect duties for each person
+  const getDutiesForPerson = (person) => {
+    const duties = [];
+    slots.forEach(slot => {
+      const slotRoomAssignments = roster[slot.id] || {};
+      Object.keys(slotRoomAssignments).forEach(roomId => {
+        const assignment = slotRoomAssignments[roomId];
+        if (assignment.staff === person.id || 
+            assignment.faculty1 === person.id || 
+            assignment.faculty2 === person.id) {
+          const room = getRoomById(roomId);
+          duties.push({ slot, room });
+        }
+      });
+    });
+    return duties;
+  };
+
+  const facultyMembers = people.filter(p => p.type === PERSON_TYPES.FACULTY && dutyCount[p.id] > 0);
+  const staffMembers = people.filter(p => p.type === PERSON_TYPES.STAFF && dutyCount[p.id] > 0);
+
+  // Calculate summary statistics
+  let totalSlotRoomPairs = 0;
   let completeAssignments = 0;
-  let staffDuties = 0;
-  let facultyDuties = 0;
-
+  
   Object.values(roster).forEach(slotRooms => {
     Object.values(slotRooms).forEach(assignment => {
-      totalAssignments++;
-      if (assignment.status === 'complete') completeAssignments++;
+      totalSlotRoomPairs++;
+      if (assignment.status === 'complete') {
+        completeAssignments++;
+      }
     });
   });
 
-  people.forEach(person => {
-    const duties = dutyCount[person.id] || 0;
-    if (person.type === PERSON_TYPES.STAFF) {
-      staffDuties += duties;
-    } else {
-      facultyDuties += duties;
-    }
-  });
+  const pendingAssignments = totalSlotRoomPairs - completeAssignments;
+  const totalFaculty = people.filter(p => p.type === PERSON_TYPES.FACULTY).length;
+  const totalStaff = people.filter(p => p.type === PERSON_TYPES.STAFF).length;
+
+  let pageNum = 1;
 
   return (
     <Document>
-      {/* Page 1: Summary */}
+      {/* SUMMARY PAGE - FIRST PAGE */}
       <Page size="A4" style={styles.page}>
-        <Text style={styles.title}>Exam Duty Roster</Text>
-        <Text style={{ textAlign: 'center', fontSize: 10, marginBottom: 20, color: '#666' }}>
-          Generated on {formatDateHuman(new Date())} at {new Date().toLocaleTimeString()}
-        </Text>
-
-        <View style={styles.statsContainer}>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{slots.length}</Text>
-            <Text style={styles.statLabel}>Total Slots</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{rooms.length}</Text>
-            <Text style={styles.statLabel}>Total Rooms</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{totalAssignments}</Text>
-            <Text style={styles.statLabel}>Assignments</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{people.length}</Text>
-            <Text style={styles.statLabel}>Total People</Text>
-          </View>
+        <SummaryPageHeader />
+        
+        <View style={styles.summaryContainer}>
+          <SummaryCard label="Total Slots" value={slots.length} />
+          <SummaryCard label="Total Slot–Room Pairs" value={totalSlotRoomPairs} />
+          <SummaryCard label="Complete Assignments" value={completeAssignments} />
+          <SummaryCard label="Pending Assignments" value={pendingAssignments} />
+          <SummaryCard label="Total Faculty Members" value={totalFaculty} />
+          <SummaryCard label="Total Staff Members" value={totalStaff} />
         </View>
 
-        <Text style={styles.sectionTitle}>Overview Statistics</Text>
-        <View style={styles.table}>
-          <View style={styles.tableHeaderRow}>
-            <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold' }]}>Metric</Text>
-            <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold' }]}>Count</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { flex: 1 }]}>Complete Assignments</Text>
-            <Text style={[styles.tableCell, { flex: 1 }]}>{completeAssignments}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { flex: 1 }]}>Pending Assignments</Text>
-            <Text style={[styles.tableCell, { flex: 1 }]}>{totalAssignments - completeAssignments}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { flex: 1 }]}>Total Staff Duties</Text>
-            <Text style={[styles.tableCell, { flex: 1 }]}>{staffDuties}</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, { flex: 1 }]}>Total Faculty Duties</Text>
-            <Text style={[styles.tableCell, { flex: 1 }]}>{facultyDuties}</Text>
-          </View>
-        </View>
-
-        {/* Workload Summary */}
-        <Text style={styles.sectionTitle}>Workload Summary</Text>
-        <View style={styles.table}>
-          <View style={styles.tableHeaderRow}>
-            <Text style={[styles.tableCell, { flex: 2, fontWeight: 'bold' }]}>Name</Text>
-            <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold' }]}>Type</Text>
-            <Text style={[styles.tableCell, { flex: 2, fontWeight: 'bold' }]}>Sub-Role</Text>
-            <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold' }]}>Duties</Text>
-          </View>
-          {people
-            .filter(p => dutyCount[p.id] > 0)
-            .sort((a, b) => (dutyCount[b.id] || 0) - (dutyCount[a.id] || 0))
-            .map(person => (
-              <View key={person.id} style={styles.tableRow}>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{person.name}</Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>{person.type}</Text>
-                <Text style={[styles.tableCell, { flex: 2 }]}>{person.subRole || '-'}</Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>{dutyCount[person.id] || 0}</Text>
-              </View>
-            ))}
-        </View>
+        <PageFooter pageNumber={pageNum++} />
       </Page>
 
-      {/* Slot-wise Schedule Pages */}
-      {slots.map((slot, slotIndex) => {
+      {/* MAIN ROSTER SECTION - ONE SLOT = ONE PAGE */}
+      {slots.map((slot) => {
         const slotRoomAssignments = roster[slot.id] || {};
         const roomIds = Object.keys(slotRoomAssignments);
         
+        // Skip empty slots
         if (roomIds.length === 0) return null;
 
         return (
           <Page key={slot.id} size="A4" style={styles.page}>
-            <Text style={styles.sectionTitle}>
-              {slot.label} - {formatDateHuman(slot.date)}
-            </Text>
-            <Text style={{ fontSize: 9, marginBottom: 10, color: '#666' }}>
-              {getDayName(slot.date)} | Time: {slot.startTime} - {slot.endTime}
-            </Text>
+            <SlotPageHeader 
+              day={getDayName(slot.date)}
+              date={formatDateHuman(slot.date)}
+              slotLabel={slot.label}
+              slotTime={`${slot.startTime} – ${slot.endTime}`}
+            />
+            
+            <SlotTable 
+              slotRoomAssignments={slotRoomAssignments}
+              rooms={rooms}
+              getRoomById={getRoomById}
+              getPersonById={getPersonById}
+            />
 
-            <View style={styles.table}>
-              <View style={styles.tableHeaderRow}>
-                <Text style={[styles.tableCell, { flex: 1.5, fontWeight: 'bold' }]}>Room</Text>
-                <Text style={[styles.tableCell, { flex: 2, fontWeight: 'bold' }]}>Staff</Text>
-                <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}>Faculty 1</Text>
-                <Text style={[styles.tableCell, { flex: 2.5, fontWeight: 'bold' }]}>Faculty 2</Text>
-              </View>
-              {roomIds.map(roomId => {
-                const assignment = slotRoomAssignments[roomId];
-                const room = getRoomById(roomId);
-                const staff = assignment.staff ? getPersonById(assignment.staff) : null;
-                const faculty1 = assignment.faculty1 ? getPersonById(assignment.faculty1) : null;
-                const faculty2 = assignment.faculty2 ? getPersonById(assignment.faculty2) : null;
-
-                return (
-                  <View key={roomId} style={styles.tableRow}>
-                    <Text style={[styles.tableCell, { flex: 1.5 }]}>{room?.name || 'Unknown'}</Text>
-                    <Text style={[styles.tableCell, { flex: 2 }]}>{staff?.name || '-'}</Text>
-                    <Text style={[styles.tableCell, { flex: 2.5 }]}>
-                      {faculty1 ? `${faculty1.name} (${faculty1.subRole})` : '-'}
-                    </Text>
-                    <Text style={[styles.tableCell, { flex: 2.5 }]}>
-                      {faculty2 ? `${faculty2.name} (${faculty2.subRole})` : '-'}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
+            <PageFooter pageNumber={pageNum++} />
           </Page>
         );
       })}
 
-      {/* Individual Duty Slips */}
-      {people.filter(p => dutyCount[p.id] > 0).map(person => {
-        const duties = [];
+      {/* FACULTY DUTY DETAILS SECTION */}
+      {facultyMembers.length > 0 && (
+        <Page size="A4" style={styles.page}>
+          <SectionPageHeader title="FACULTY DUTY DETAILS" />
+          
+          {facultyMembers.map((faculty) => {
+            const duties = getDutiesForPerson(faculty);
+            return (
+              <FacultyDetailBlock 
+                key={faculty.id}
+                person={faculty}
+                duties={duties}
+                dutyCount={dutyCount}
+              />
+            );
+          })}
+
+          <PageFooter pageNumber={pageNum++} />
+        </Page>
+      )}
+
+      {/* STAFF DUTY DETAILS SECTION */}
+      {staffMembers.length > 0 && (
+        <Page size="A4" style={styles.page}>
+          <SectionPageHeader title="STAFF DUTY DETAILS" />
+          
+          {staffMembers.map((staff) => {
+            const duties = getDutiesForPerson(staff);
+            return (
+              <StaffDetailBlock 
+                key={staff.id}
+                person={staff}
+                duties={duties}
+                dutyCount={dutyCount}
+              />
+            );
+          })}
+
+          <PageFooter pageNumber={pageNum++} />
+        </Page>
+      )}
+
+      {/* WORKLOAD SUMMARY TABLE */}
+      <Page size="A4" style={styles.page}>
+        <SectionPageHeader title="WORKLOAD SUMMARY" />
         
-        // Collect all duties for this person
-        slots.forEach(slot => {
-          const slotRoomAssignments = roster[slot.id] || {};
-          Object.keys(slotRoomAssignments).forEach(roomId => {
-            const assignment = slotRoomAssignments[roomId];
-            if (assignment.staff === person.id || 
-                assignment.faculty1 === person.id || 
-                assignment.faculty2 === person.id) {
-              const room = getRoomById(roomId);
-              duties.push({
-                slot,
-                room,
-                role: assignment.staff === person.id ? 'Staff' : 'Faculty'
-              });
-            }
-          });
-        });
-
-        return (
-          <Page key={person.id} size="A4" style={styles.page}>
-            <Text style={styles.title}>Individual Duty Slip</Text>
-            <Text style={{ fontSize: 12, fontWeight: 'bold', marginBottom: 5 }}>
-              Name: {person.name}
-            </Text>
-            <Text style={{ fontSize: 10, marginBottom: 3, color: '#666' }}>
-              Type: {person.type}
-            </Text>
-            {person.subRole && (
-              <Text style={{ fontSize: 10, marginBottom: 10, color: '#666' }}>
-                Sub-Role: {person.subRole}
-              </Text>
-            )}
-            <Text style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 10 }}>
-              Total Duties: {dutyCount[person.id]}
-            </Text>
-
-            <View style={styles.table}>
-              <View style={styles.tableHeaderRow}>
-                <Text style={[styles.tableCell, { flex: 2, fontWeight: 'bold' }]}>Slot</Text>
-                <Text style={[styles.tableCell, { flex: 1.5, fontWeight: 'bold' }]}>Date</Text>
-                <Text style={[styles.tableCell, { flex: 1.5, fontWeight: 'bold' }]}>Time</Text>
-                <Text style={[styles.tableCell, { flex: 1, fontWeight: 'bold' }]}>Room</Text>
-              </View>
-              {duties.map((duty, index) => (
-                <View key={index} style={styles.tableRow}>
-                  <Text style={[styles.tableCell, { flex: 2 }]}>{duty.slot.label}</Text>
-                  <Text style={[styles.tableCell, { flex: 1.5 }]}>
-                    {formatDateHuman(duty.slot.date)}
-                  </Text>
-                  <Text style={[styles.tableCell, { flex: 1.5 }]}>
-                    {duty.slot.startTime} - {duty.slot.endTime}
-                  </Text>
-                  <Text style={[styles.tableCell, { flex: 1 }]}>{duty.room?.name || '-'}</Text>
+        <View style={styles.table}>
+          <View style={styles.tableHeaderRow}>
+            <Text style={[styles.tableCellHeader, { width: '40%' }]}>Name</Text>
+            <Text style={[styles.tableCellHeader, { width: '20%' }]}>Type</Text>
+            <Text style={[styles.tableCellHeader, { width: '20%' }]}>Duty Limit</Text>
+            <Text style={[styles.tableCellHeaderLast, { width: '20%' }]}>Assigned Duties</Text>
+          </View>
+          {people
+            .filter(p => dutyCount[p.id] > 0)
+            .sort((a, b) => (dutyCount[b.id] || 0) - (dutyCount[a.id] || 0))
+            .map((person, index, arr) => {
+              const isLast = index === arr.length - 1;
+              const dutyLimitDisplay = person.type === PERSON_TYPES.STAFF 
+                ? 'All Days' 
+                : (person.maxDutyCount || '—');
+              return (
+                <View key={person.id} style={isLast ? styles.tableRowLast : styles.tableRow}>
+                  <Text style={[styles.tableCell, { width: '40%' }]}>{person.name}</Text>
+                  <Text style={[styles.tableCell, { width: '20%' }]}>{person.type}</Text>
+                  <Text style={[styles.tableCell, { width: '20%' }]}>{dutyLimitDisplay}</Text>
+                  <Text style={[styles.tableCellLast, { width: '20%' }]}>{dutyCount[person.id] || 0}</Text>
                 </View>
-              ))}
-            </View>
-          </Page>
-        );
-      })}
+              );
+            })}
+        </View>
+
+        <PageFooter pageNumber={pageNum} />
+      </Page>
     </Document>
   );
 };
@@ -309,7 +500,7 @@ const PDFExportButton = ({ rosterData, slots, rooms, people }) => {
     >
       {({ blob, url, loading, error }) => (
         <button className="btn btn-primary" disabled={loading}>
-          {loading ? '⏳ Generating PDF...' : '📄 Download PDF'}
+          {loading ? 'Generating PDF...' : 'Download PDF'}
         </button>
       )}
     </PDFDownloadLink>

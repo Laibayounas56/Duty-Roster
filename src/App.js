@@ -106,22 +106,8 @@ function App() {
           slots={slots}
           rooms={rooms}
           people={people}
-          onExportPDF={() => {}}
           onBack={handleBackToSetup}
         />
-        <div style={{ 
-          position: 'fixed', 
-          bottom: '20px', 
-          right: '20px',
-          zIndex: 1000 
-        }}>
-          <PDFExportButton
-            rosterData={generatedRoster}
-            slots={slots}
-            rooms={rooms}
-            people={people}
-          />
-        </div>
       </div>
     );
   }

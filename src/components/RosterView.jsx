@@ -2,8 +2,9 @@ import React from 'react';
 import { PERSON_TYPES } from '../models/dataModels';
 import './styles.css';
 import { formatDateHuman, getDayName } from '../utils/dateHelpers';
+import PDFExportButton from '../pdf/PDFExport';
 
-const RosterView = ({ rosterData, slots, rooms, people, onExportPDF, onBack }) => {
+const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
   const { roster, dutyCount } = rosterData;
 
   const getPersonById = (id) => people.find(p => p.id === id);
@@ -33,9 +34,12 @@ const RosterView = ({ rosterData, slots, rooms, people, onExportPDF, onBack }) =
         <div className="card-header">
           <h1 className="card-title" style={{ fontSize: '22px' }}> Generated Roster</h1>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button className="btn btn-success" onClick={onExportPDF}>
-               Export PDF
-            </button>
+            <PDFExportButton
+              rosterData={rosterData}
+              slots={slots}
+              rooms={rooms}
+              people={people}
+            />
             <button className="btn btn-secondary" onClick={onBack}>
               ← Back to Setup
             </button>
