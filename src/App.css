@@ -8,11 +8,16 @@
 .app-header {
   background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
   color: #FFFFFF;
-  padding: 40px 40px 48px;
+  padding: 28px 40px;
   box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
   border-bottom: 4px solid #0EA5E9;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .app-header::before {
@@ -30,19 +35,22 @@
 .app-header h1 {
   font-size: 32px;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: #FFFFFF;
   letter-spacing: -0.5px;
   position: relative;
   z-index: 1;
+  text-align: center;
 }
 
 .app-header p {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
   position: relative;
   z-index: 1;
+  text-align: center;
+  margin: 0;
 }
 
 .app-main {
@@ -125,7 +133,7 @@ section {
 
 @media (max-width: 480px) {
   .app-header {
-    padding: 32px 20px 40px;
+    padding: 24px 20px;
   }
   
   .app-main {

@@ -137,8 +137,8 @@ function App() {
       )}
       
       <header className="app-header">
-        <h1>🎓 Exam Duty Roster Management System</h1>
-        <p>Manage exam invigilation roster with intelligent allocation</p>
+        <h1> Examination Duty Roster </h1>
+        <p>Manage exam invigilation  with intelligent allocation</p>
       </header>
 
       <main className="app-main">
@@ -189,7 +189,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>Built with React + JavaScript | DSA: Greedy Allocation Algorithm</p>
+        
       </footer>
     </div>
   );
