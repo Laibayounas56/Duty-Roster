@@ -1,6 +1,5 @@
 import React from 'react';
 import './styles.css';
-import { formatDateHuman } from '../utils/dateHelpers';
 
 const ReviewPanel = ({ 
   rooms, 

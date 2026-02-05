@@ -4,7 +4,6 @@ import SlotsManager from './components/SlotsManager';
 import PeopleManager from './components/PeopleManager';
 import ReviewPanel from './components/ReviewPanel';
 import RosterView from './components/RosterView';
-import PDFExportButton from './pdf/PDFExport';
 import SuccessNotification from './components/SuccessNotification';
 import { generateRoster } from './logic/generateRoster';
 import {
@@ -78,6 +77,11 @@ function App() {
       setCurrentView('roster');
       setSuccessMessage('Roster Generated Successfully');
       setSuccessDetails('');
+      
+      // Scroll to top after roster is generated
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
       setShowSuccess(true);
     } catch (error) {
       console.error('Error generating roster:', error);

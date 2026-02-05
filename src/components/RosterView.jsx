@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PERSON_TYPES } from '../models/dataModels';
 import './styles.css';
 import { formatDateHuman, getDayName } from '../utils/dateHelpers';
@@ -7,8 +7,13 @@ import PDFExportButton from '../pdf/PDFExport';
 const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
   const { roster, dutyCount } = rosterData;
 
+  // Scroll to top when roster view is displayed
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const getPersonById = (id) => people.find(p => p.id === id);
-  const getRoomById = (id) => rooms.find(r => r.id == id); // Use == to handle string/number comparison
+  const getRoomById = (id) => rooms.find(r => r.id === id);
 
   // Calculate stats
   let totalAssignments = 0;
