@@ -204,8 +204,8 @@ const SlotTable = ({ slotRoomAssignments, rooms, getRoomById, getPersonById }) =
   }
 
   return (
-    <View style={styles.table} wrap={false}>
-      <View style={styles.tableHeaderRow} wrap={false}>
+    <View style={styles.table}>
+      <View style={styles.tableHeaderRow} wrap={false} fixed>
         <Text style={[styles.tableCellHeader, { width: '18%' }]}>Room</Text>
         <Text style={[styles.tableCellHeader, { width: '27%' }]}>Staff</Text>
         <Text style={[styles.tableCellHeader, { width: '27%' }]}>Faculty 1</Text>
@@ -260,7 +260,7 @@ const FacultyDetailBlock = ({ person, duties, dutyCount }) => (
       Designation: {person.subRole || 'Faculty'} | Total Duties: {dutyCount[person.id] || 0}
     </Text>
     <View style={styles.detailTable}>
-      <View style={styles.tableHeaderRow} wrap={false}>
+      <View style={styles.tableHeaderRow} wrap={false} fixed>
         <Text style={[styles.tableCellHeader, { width: '40%' }]}>Date</Text>
         <Text style={[styles.tableCellHeader, { width: '35%' }]}>Time</Text>
         <Text style={[styles.tableCellHeaderLast, { width: '25%' }]}>Room</Text>
@@ -291,7 +291,7 @@ const StaffDetailBlock = ({ person, duties, dutyCount }) => (
       Role: {person.subRole || 'Staff'} | Total Duties: {dutyCount[person.id] || 0}
     </Text>
     <View style={styles.detailTable}>
-      <View style={styles.tableHeaderRow} wrap={false}>
+      <View style={styles.tableHeaderRow} wrap={false} fixed>
         <Text style={[styles.tableCellHeader, { width: '40%' }]}>Date</Text>
         <Text style={[styles.tableCellHeader, { width: '35%' }]}>Time</Text>
         <Text style={[styles.tableCellHeaderLast, { width: '25%' }]}>Room</Text>
@@ -454,8 +454,8 @@ const RosterPDF = ({ rosterData, slots, rooms, people }) => {
       <Page size="A4" style={styles.page}>
         <SectionPageHeader title="WORKLOAD SUMMARY" />
         
-        <View style={styles.table} wrap={false}>
-          <View style={styles.tableHeaderRow} wrap={false}>
+        <View style={styles.table}>
+          <View style={styles.tableHeaderRow} wrap={false} fixed>
             <Text style={[styles.tableCellHeader, { width: '40%' }]}>Name</Text>
             <Text style={[styles.tableCellHeader, { width: '20%' }]}>Type</Text>
             <Text style={[styles.tableCellHeader, { width: '20%' }]}>Duty Limit</Text>
