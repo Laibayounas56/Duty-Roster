@@ -3,7 +3,7 @@ import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-
 import { PERSON_TYPES } from '../models/dataModels';
 import { formatDateHuman, getDayName } from '../utils/dateHelpers';
 
-// PDF Styles - Professional University Format
+// PDF Styles - 
 const styles = StyleSheet.create({
   page: {
     padding: 50,
@@ -319,11 +319,7 @@ const RosterPDF = ({ rosterData, slots, rooms, people }) => {
   const { roster, dutyCount } = rosterData;
 
   const getPersonById = (id) => people.find(p => p.id === id);
-  const getRoomById = (id) => {
-    // Convert to number for comparison since roster uses numeric IDs
-    const numericId = typeof id === 'string' ? parseFloat(id) : id;
-    return rooms.find(r => r.id === numericId);
-  };
+  const getRoomById = (id) => rooms.find(r => r.id === id);
 
   // Collect duties for each person
   const getDutiesForPerson = (person) => {

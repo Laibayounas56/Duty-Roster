@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ConfirmModal from './ConfirmModal';
+import { generateRoomId } from '../models/dataModels';
 import './styles.css';
 
 const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoster, setGeneratedRoster }) => {
@@ -13,7 +14,7 @@ const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoste
     if (!roomName.trim()) return;
     
     const newRoom = {
-      id: Date.now() + Math.random(),
+      id: generateRoomId(rooms),
       name: roomName.trim()
     };
     

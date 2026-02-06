@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PERSON_TYPES, FACULTY_SUB_ROLES, DAYS_OF_WEEK } from '../models/dataModels';
+import { PERSON_TYPES, FACULTY_SUB_ROLES, DAYS_OF_WEEK, generatePersonId } from '../models/dataModels';
 import ConfirmModal from './ConfirmModal';
 import { formatDaysDisplay } from '../utils/daysHelper';
 import './styles.css';
@@ -44,7 +44,7 @@ const PeopleManager = ({ people, setPeople }) => {
     } else {
       // Add new person
       const newPerson = {
-        id: Date.now() + Math.random(),
+        id: generatePersonId(people, type),
         name: name.trim(),
         type,
         subRole: type === PERSON_TYPES.FACULTY ? subRole : null,

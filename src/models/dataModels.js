@@ -22,6 +22,33 @@ export const DAYS_OF_WEEK = [
   'Saturday'
 ];
 
+// Helper functions to generate simple sequential IDs
+export const generateRoomId = (existingRooms) => {
+  const maxNum = existingRooms.reduce((max, room) => {
+    const match = room.id.match(/^room-(\d+)$/);
+    return match ? Math.max(max, parseInt(match[1])) : max;
+  }, 0);
+  return `room-${maxNum + 1}`;
+};
+
+export const generateSlotId = (existingSlots) => {
+  const maxNum = existingSlots.reduce((max, slot) => {
+    const match = slot.id.match(/^slot-(\d+)$/);
+    return match ? Math.max(max, parseInt(match[1])) : max;
+  }, 0);
+  return `slot-${maxNum + 1}`;
+};
+
+export const generatePersonId = (existingPeople, type) => {
+  const prefix = type === PERSON_TYPES.STAFF ? 'staff' : 'faculty';
+  const sametype = existingPeople.filter(p => p.type === type);
+  const maxNum = sametype.reduce((max, person) => {
+    const match = person.id.match(new RegExp(`^${prefix}-(\\d+)$`));
+    return match ? Math.max(max, parseInt(match[1])) : max;
+  }, 0);
+  return `${prefix}-${maxNum + 1}`;
+};
+
 // Helper functions to create data objects
 export const createRoom = (name) => ({
   id: Date.now() + Math.random(),

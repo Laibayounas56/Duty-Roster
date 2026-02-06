@@ -2,7 +2,15 @@
 
 // Returns date like "2 March 2026"
 export const formatDateHuman = (date) => {
+  if (!date) return 'Invalid Date';
+  
   const d = new Date(date);
+  
+  // Check if date is valid
+  if (isNaN(d.getTime())) {
+    return 'Invalid Date';
+  }
+  
   const day = d.getDate();
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -16,7 +24,15 @@ export const formatDateHuman = (date) => {
 
 // Returns day name like "Monday"
 export const getDayName = (date) => {
+  if (!date) return '';
+  
   const d = new Date(date);
+  
+  // Check if date is valid
+  if (isNaN(d.getTime())) {
+    return '';
+  }
+  
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return dayNames[d.getDay()];
 };

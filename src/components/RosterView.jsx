@@ -149,7 +149,15 @@ const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
 
                   return (
                     <tr key={roomId}>
-                      <td><strong>{room?.name || 'Unknown'}</strong></td>
+                      <td>
+                        <strong>
+                          {room ? room.name : (
+                            <span style={{ color: '#dc3545' }} title={`Room ID: ${roomId} not found`}>
+                              Unknown Room
+                            </span>
+                          )}
+                        </strong>
+                      </td>
                       <td>{staff ? staff.name : <span style={{ color: '#dc3545' }}>-</span>}</td>
                       <td>{faculty1 ? `${faculty1.name} (${faculty1.subRole})` : <span style={{ color: '#dc3545' }}>-</span>}</td>
                       <td>{faculty2 ? `${faculty2.name} (${faculty2.subRole})` : '-'}</td>

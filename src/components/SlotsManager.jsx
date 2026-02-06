@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ConfirmModal from './ConfirmModal';
+import { generateSlotId } from '../models/dataModels';
 import './styles.css';
 import { formatDateHuman, getDayName, structuredToISODate, isoDateToStructured, getMonthOptions } from '../utils/dateHelpers';
 
@@ -24,11 +25,24 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [selectedRooms, setSelectedRooms] = useState([]);
 
   const handleAdd = () => {
+    // Ensure all fields are filled
     if (!day || !month || !year || !startTime || !endTime || !label.trim()) {
-      return; // Silently prevent submission if incomplete
+      alert('Please fill in all fields');
+      return;
     }
     
-    const date = structuredToISODate(day, month, year);
+    // Parse numeric values
+    const dayNum = parseInt(day, 10);
+    const monthNum = parseInt(month, 10);
+    const yearNum = parseInt(year, 10);
+    
+    // Validate numeric fields
+    if (isNaN(dayNum) || isNaN(monthNum) || isNaN(yearNum)) {
+      alert('Invalid date values');
+      return;
+    }
+    
+    const date = structuredToISODate(dayNum, monthNum, yearNum);
     
     if (editMode) {
       // Update existing slot
@@ -40,7 +54,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     } else {
       // Add new slot
       const newSlot = {
-        id: Date.now() + Math.random(),
+        id: generateSlotId(slots),
         date,
         startTime,
         endTime,
