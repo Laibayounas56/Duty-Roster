@@ -205,7 +205,7 @@ const SlotTable = ({ slotRoomAssignments, rooms, getRoomById, getPersonById }) =
 
   return (
     <View style={styles.table} wrap={false}>
-      <View style={styles.tableHeaderRow}>
+      <View style={styles.tableHeaderRow} wrap={false}>
         <Text style={[styles.tableCellHeader, { width: '18%' }]}>Room</Text>
         <Text style={[styles.tableCellHeader, { width: '27%' }]}>Staff</Text>
         <Text style={[styles.tableCellHeader, { width: '27%' }]}>Faculty 1</Text>
@@ -220,7 +220,7 @@ const SlotTable = ({ slotRoomAssignments, rooms, getRoomById, getPersonById }) =
         const isLast = index === roomIds.length - 1;
 
         return (
-          <View key={roomId} style={isLast ? styles.tableRowLast : styles.tableRow}>
+          <View key={roomId} style={isLast ? styles.tableRowLast : styles.tableRow} wrap={false}>
             <Text style={[styles.tableCell, { width: '18%' }]}>
               {room && room.name ? room.name : (rooms.length > 0 ? `ID: ${roomId}` : '—')}
             </Text>
@@ -260,7 +260,7 @@ const FacultyDetailBlock = ({ person, duties, dutyCount }) => (
       Designation: {person.subRole || 'Faculty'} | Total Duties: {dutyCount[person.id] || 0}
     </Text>
     <View style={styles.detailTable}>
-      <View style={styles.tableHeaderRow}>
+      <View style={styles.tableHeaderRow} wrap={false}>
         <Text style={[styles.tableCellHeader, { width: '40%' }]}>Date</Text>
         <Text style={[styles.tableCellHeader, { width: '35%' }]}>Time</Text>
         <Text style={[styles.tableCellHeaderLast, { width: '25%' }]}>Room</Text>
@@ -268,7 +268,7 @@ const FacultyDetailBlock = ({ person, duties, dutyCount }) => (
       {duties.map((duty, index) => {
         const isLast = index === duties.length - 1;
         return (
-          <View key={index} style={isLast ? styles.tableRowLast : styles.tableRow}>
+          <View key={index} style={isLast ? styles.tableRowLast : styles.tableRow} wrap={false}>
             <Text style={[styles.tableCell, { width: '40%' }]}>
               {getDayName(duty.slot.date)}, {formatDateHuman(duty.slot.date)}
             </Text>
@@ -291,7 +291,7 @@ const StaffDetailBlock = ({ person, duties, dutyCount }) => (
       Role: {person.subRole || 'Staff'} | Total Duties: {dutyCount[person.id] || 0}
     </Text>
     <View style={styles.detailTable}>
-      <View style={styles.tableHeaderRow}>
+      <View style={styles.tableHeaderRow} wrap={false}>
         <Text style={[styles.tableCellHeader, { width: '40%' }]}>Date</Text>
         <Text style={[styles.tableCellHeader, { width: '35%' }]}>Time</Text>
         <Text style={[styles.tableCellHeaderLast, { width: '25%' }]}>Room</Text>
@@ -299,7 +299,7 @@ const StaffDetailBlock = ({ person, duties, dutyCount }) => (
       {duties.map((duty, index) => {
         const isLast = index === duties.length - 1;
         return (
-          <View key={index} style={isLast ? styles.tableRowLast : styles.tableRow}>
+          <View key={index} style={isLast ? styles.tableRowLast : styles.tableRow} wrap={false}>
             <Text style={[styles.tableCell, { width: '40%' }]}>
               {getDayName(duty.slot.date)}, {formatDateHuman(duty.slot.date)}
             </Text>
@@ -454,8 +454,8 @@ const RosterPDF = ({ rosterData, slots, rooms, people }) => {
       <Page size="A4" style={styles.page}>
         <SectionPageHeader title="WORKLOAD SUMMARY" />
         
-        <View style={styles.table}>
-          <View style={styles.tableHeaderRow}>
+        <View style={styles.table} wrap={false}>
+          <View style={styles.tableHeaderRow} wrap={false}>
             <Text style={[styles.tableCellHeader, { width: '40%' }]}>Name</Text>
             <Text style={[styles.tableCellHeader, { width: '20%' }]}>Type</Text>
             <Text style={[styles.tableCellHeader, { width: '20%' }]}>Duty Limit</Text>
@@ -470,7 +470,7 @@ const RosterPDF = ({ rosterData, slots, rooms, people }) => {
                 ? 'All Days' 
                 : (person.maxDutyCount || '—');
               return (
-                <View key={person.id} style={isLast ? styles.tableRowLast : styles.tableRow}>
+                <View key={person.id} style={isLast ? styles.tableRowLast : styles.tableRow} wrap={false}>
                   <Text style={[styles.tableCell, { width: '40%' }]}>{person.name}</Text>
                   <Text style={[styles.tableCell, { width: '20%' }]}>{person.type}</Text>
                   <Text style={[styles.tableCell, { width: '20%' }]}>{dutyLimitDisplay}</Text>
