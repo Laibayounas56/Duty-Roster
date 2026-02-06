@@ -9,9 +9,17 @@ const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoste
   const [editingRoom, setEditingRoom] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [roomError, setRoomError] = useState('');
 
   const handleAdd = () => {
     if (!roomName.trim()) return;
+    
+    // Check if room name already exists (case-insensitive)
+    const nameExists = rooms.some(r => r.name.toLowerCase() === roomName.trim().toLowerCase());
+    if (nameExists) {
+      setRoomError('A room with this name already exists');
+      return;
+    }
     
     const newRoom = {
       id: generateRoomId(rooms),
@@ -31,6 +39,15 @@ const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoste
 
   const handleUpdate = () => {
     if (!roomName.trim()) return;
+    
+    // Check if room name already exists (excluding current room)
+    const nameExists = rooms.some(r => 
+      r.id !== editingRoom.id && r.name.toLowerCase() === roomName.trim().toLowerCase()
+    );
+    if (nameExists) {
+      setRoomError('A room with this name already exists');
+      return;
+    }
     
     setRooms(rooms.map(r => 
       r.id === editingRoom.id ? { ...r, name: roomName.trim() } : r
@@ -71,6 +88,7 @@ const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoste
   const openAddModal = () => {
     setEditingRoom(null);
     setRoomName('');
+    setRoomError('');
     setShowModal(true);
   };
 
@@ -78,6 +96,7 @@ const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoste
     setShowModal(false);
     setEditingRoom(null);
     setRoomName('');
+    setRoomError('');
   };
 
   return (
@@ -137,11 +156,28 @@ const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoste
                 type="text"
                 className="form-input"
                 value={roomName}
-                onChange={e => setRoomName(e.target.value)}
+                onChange={e => {
+                  setRoomName(e.target.value);
+                  setRoomError('');
+                }}
                 placeholder="e.g., N3, Lab 1, etc."
                 autoFocus
               />
             </div>
+
+            {roomError && (
+              <div style={{ 
+                color: '#dc3545', 
+                fontSize: '14px', 
+                padding: '10px 12px', 
+                backgroundColor: '#fee',
+                borderRadius: '6px',
+                marginTop: '-4px',
+                fontWeight: '500'
+              }}>
+                ⚠️ {roomError}
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button className="btn btn-secondary" onClick={closeModal}>

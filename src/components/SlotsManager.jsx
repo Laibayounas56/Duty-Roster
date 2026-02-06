@@ -21,6 +21,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [endTime, setEndTime] = useState('05:00 PM');
   const [label, setLabel] = useState('');
   const [timeError, setTimeError] = useState('');
+  const [slotError, setSlotError] = useState('');
   
   const monthOptions = getMonthOptions();
   
@@ -29,10 +30,11 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const handleAdd = () => {
     // Clear previous errors
     setTimeError('');
+    setSlotError('');
     
     // Ensure all fields are filled
     if (!day || !month || !year || !startTime || !endTime || !label.trim()) {
-      alert('Please fill in all fields');
+      setSlotError('Please fill in all fields');
       return;
     }
     
@@ -69,13 +71,25 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     
     // Validate numeric fields
     if (isNaN(dayNum) || isNaN(monthNum) || isNaN(yearNum)) {
-      alert('Invalid date values');
+      setSlotError('Invalid date values');
       return;
     }
     
     const date = structuredToISODate(dayNum, monthNum, yearNum);
     
     if (editMode) {
+      // Check if slot with same date and time already exists (excluding current slot)
+      const duplicateExists = slots.some(s => 
+        s.id !== editingSlotId && 
+        s.date === date && 
+        s.startTime === startTime24 && 
+        s.endTime === endTime24
+      );
+      if (duplicateExists) {
+        setSlotError('A slot with the same date and time already exists');
+        return;
+      }
+      
       // Update existing slot - store in 24-hour format
       setSlots(slots.map(s => 
         s.id === editingSlotId 
@@ -83,6 +97,17 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
           : s
       ));
     } else {
+      // Check if slot with same date and time already exists
+      const duplicateExists = slots.some(s => 
+        s.date === date && 
+        s.startTime === startTime24 && 
+        s.endTime === endTime24
+      );
+      if (duplicateExists) {
+        setSlotError('A slot with the same date and time already exists');
+        return;
+      }
+      
       // Add new slot - store in 24-hour format
       const newSlot = {
         id: generateSlotId(slots),
@@ -163,6 +188,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     setEndTime('05:00 PM');
     setLabel('');
     setTimeError('');
+    setSlotError('');
     setEditMode(false);
     setEditingSlotId(null);
   };
@@ -177,6 +203,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     setEndTime('05:00 PM');
     setLabel('');
     setTimeError('');
+    setSlotError('');
     setShowModal(true);
   };
 
@@ -267,7 +294,10 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                 type="text"
                 className="form-input"
                 value={label}
-                onChange={e => setLabel(e.target.value)}
+                onChange={e => {
+                  setLabel(e.target.value);
+                  setSlotError('');
+                }}
                 placeholder="e.g., Slot 1, Morning Session, etc."
               />
             </div>
@@ -279,7 +309,10 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                   type="number"
                   className="form-input"
                   value={day}
-                  onChange={e => setDay(e.target.value)}
+                  onChange={e => {
+                    setDay(e.target.value);
+                    setSlotError('');
+                  }}
                   placeholder="Day"
                   min="1"
                   max="31"
@@ -289,7 +322,10 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                 <select
                   className="form-input"
                   value={month}
-                  onChange={e => setMonth(e.target.value)}
+                  onChange={e => {
+                    setMonth(e.target.value);
+                    setSlotError('');
+                  }}
                   style={{ flex: '0 0 100px' }}
                 >
                   <option value="" disabled>Month</option>
@@ -302,7 +338,10 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                   type="number"
                   className="form-input"
                   value={year}
-                  onChange={e => setYear(e.target.value)}
+                  onChange={e => {
+                    setYear(e.target.value);
+                    setSlotError('');
+                  }}
                   placeholder="Year"
                   min="2020"
                   max="2099"
@@ -317,6 +356,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
               onChange={(time) => {
                 setStartTime(time);
                 setTimeError('');
+                setSlotError('');
               }}
             />
 
@@ -326,6 +366,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
               onChange={(time) => {
                 setEndTime(time);
                 setTimeError('');
+                setSlotError('');
               }}
             />
 
@@ -340,6 +381,20 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                 fontWeight: '500'
               }}>
                 ⚠️ {timeError}
+              </div>
+            )}
+
+            {slotError && (
+              <div style={{ 
+                color: '#dc3545', 
+                fontSize: '14px', 
+                padding: '10px 12px', 
+                backgroundColor: '#fee',
+                borderRadius: '6px',
+                marginTop: '4px',
+                fontWeight: '500'
+              }}>
+                ⚠️ {slotError}
               </div>
             )}
 
