@@ -1,7 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
 import { PERSON_TYPES } from '../models/dataModels';
-import { formatDateHuman, getDayName } from '../utils/dateHelpers';
+import { formatDateHuman, getDayName, convertTo12Hour } from '../utils/dateHelpers';
 
 // PDF Styles - 
 const styles = StyleSheet.create({
@@ -273,7 +273,7 @@ const FacultyDetailBlock = ({ person, duties, dutyCount }) => (
               {getDayName(duty.slot.date)}, {formatDateHuman(duty.slot.date)}
             </Text>
             <Text style={[styles.tableCell, { width: '35%' }]}>
-              {duty.slot.startTime} – {duty.slot.endTime}
+              {convertTo12Hour(duty.slot.startTime)} – {convertTo12Hour(duty.slot.endTime)}
             </Text>
             <Text style={[styles.tableCellLast, { width: '25%' }]}>{duty.room?.name || '—'}</Text>
           </View>
@@ -304,7 +304,7 @@ const StaffDetailBlock = ({ person, duties, dutyCount }) => (
               {getDayName(duty.slot.date)}, {formatDateHuman(duty.slot.date)}
             </Text>
             <Text style={[styles.tableCell, { width: '35%' }]}>
-              {duty.slot.startTime} – {duty.slot.endTime}
+              {convertTo12Hour(duty.slot.startTime)} – {convertTo12Hour(duty.slot.endTime)}
             </Text>
             <Text style={[styles.tableCellLast, { width: '25%' }]}>{duty.room?.name || '—'}</Text>
           </View>
@@ -393,7 +393,7 @@ const RosterPDF = ({ rosterData, slots, rooms, people }) => {
               day={getDayName(slot.date)}
               date={formatDateHuman(slot.date)}
               slotLabel={slot.label}
-              slotTime={`${slot.startTime} – ${slot.endTime}`}
+              slotTime={`${convertTo12Hour(slot.startTime)} – ${convertTo12Hour(slot.endTime)}`}
             />
             
             <SlotTable 

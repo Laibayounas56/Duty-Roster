@@ -71,3 +71,46 @@ export const getMonthOptions = () => {
     { value: 12, label: 'Dec' }
   ];
 };
+
+// Convert 12-hour time (e.g., "01:30 PM") to 24-hour format (e.g., "13:30") for internal storage
+export const convertTo24Hour = (time12h) => {
+  const regex = /^(0[1-9]|1[0-2]):([0-5][0-9])\s?(AM|PM)$/i;
+  const match = time12h.match(regex);
+  
+  if (!match) return null;
+  
+  let [, hours, minutes, period] = match;
+  hours = parseInt(hours, 10);
+  
+  if (period.toUpperCase() === 'PM' && hours !== 12) {
+    hours += 12;
+  } else if (period.toUpperCase() === 'AM' && hours === 12) {
+    hours = 0;
+  }
+  
+  return `${String(hours).padStart(2, '0')}:${minutes}`;
+};
+
+// Convert 24-hour time (e.g., "13:30") to 12-hour format (e.g., "01:30 PM") for display
+export const convertTo12Hour = (time24h) => {
+  if (!time24h) return '';
+  
+  const [hoursStr, minutes] = time24h.split(':');
+  let hours = parseInt(hoursStr, 10);
+  
+  const period = hours >= 12 ? 'PM' : 'AM';
+  
+  if (hours === 0) {
+    hours = 12;
+  } else if (hours > 12) {
+    hours -= 12;
+  }
+  
+  return `${String(hours).padStart(2, '0')}:${minutes} ${period}`;
+};
+
+// Validate 12-hour time format
+export const validate12HourTime = (time) => {
+  const regex = /^(0[1-9]|1[0-2]):([0-5][0-9])\s?(AM|PM)$/i;
+  return regex.test(time);
+};

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { PERSON_TYPES } from '../models/dataModels';
 import './styles.css';
-import { formatDateHuman, getDayName } from '../utils/dateHelpers';
+import { formatDateHuman, getDayName, convertTo12Hour } from '../utils/dateHelpers';
 import PDFExportButton from '../pdf/PDFExport';
 
 const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
@@ -124,7 +124,7 @@ const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
                 <div style={{ fontSize: '13px', color: '#64748B', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <span>{getDayName(slot.date)}</span>
                   <span style={{ color: '#CBD5E1' }}>|</span>
-                  <span> {slot.startTime} - {slot.endTime}</span>
+                  <span> {convertTo12Hour(slot.startTime)} - {convertTo12Hour(slot.endTime)}</span>
                 </div>
               </div>
             </div>
@@ -185,6 +185,7 @@ const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
               <th>Name</th>
               <th>Type</th>
               <th>Sub-Role</th>
+              <th>Max Duties</th>
               <th>Duties Assigned</th>
             </tr>
           </thead>
@@ -201,6 +202,17 @@ const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
                     </span>
                   </td>
                   <td>{person.subRole || '-'}</td>
+                  <td>
+                    {person.type === PERSON_TYPES.STAFF ? (
+                      <span style={{ color: '#64748B',  }}>Unlimited</span>
+                    ) : (
+                      person.maxDutyCount ? (
+                        <strong style={{ color: '#1E3A8A' }}>{person.maxDutyCount}</strong>
+                      ) : (
+                        <span style={{ color: '#64748B', }}>Unlimited</span>
+                      )
+                    )}
+                  </td>
                   <td>
                     <strong style={{ fontSize: '16px', color: '#1E3A8A' }}>
                       {dutyCount[person.id] || 0}

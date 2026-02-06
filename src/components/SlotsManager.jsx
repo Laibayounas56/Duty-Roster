@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import ConfirmModal from './ConfirmModal';
+import TimePicker from './TimePicker';
 import { generateSlotId } from '../models/dataModels';
 import './styles.css';
-import { formatDateHuman, getDayName, structuredToISODate, isoDateToStructured, getMonthOptions } from '../utils/dateHelpers';
+import { formatDateHuman, getDayName, structuredToISODate, isoDateToStructured, getMonthOptions, convertTo24Hour, convertTo12Hour, validate12HourTime } from '../utils/dateHelpers';
 
 const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [showModal, setShowModal] = useState(false);
@@ -19,15 +20,45 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [label, setLabel] = useState('');
+  const [timeError, setTimeError] = useState('');
   
   const monthOptions = getMonthOptions();
   
   const [selectedRooms, setSelectedRooms] = useState([]);
 
   const handleAdd = () => {
+    // Clear previous errors
+    setTimeError('');
+    
     // Ensure all fields are filled
     if (!day || !month || !year || !startTime || !endTime || !label.trim()) {
       alert('Please fill in all fields');
+      return;
+    }
+    
+    // Validate time format (should already be valid from TimePicker component)
+    if (!validate12HourTime(startTime) || !validate12HourTime(endTime)) {
+      setTimeError('Invalid time format');
+      return;
+    }
+    
+    // Convert to 24-hour for storage
+    const startTime24 = convertTo24Hour(startTime);
+    const endTime24 = convertTo24Hour(endTime);
+    
+    if (!startTime24 || !endTime24) {
+      setTimeError('Invalid time format');
+      return;
+    }
+    
+    // Validate end time is after start time
+    const [startHr, startMin] = startTime24.split(':').map(Number);
+    const [endHr, endMin] = endTime24.split(':').map(Number);
+    const startMinutes = startHr * 60 + startMin;
+    const endMinutes = endHr * 60 + endMin;
+    
+    if (endMinutes <= startMinutes) {
+      setTimeError('End time must be after start time');
       return;
     }
     
@@ -45,19 +76,19 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     const date = structuredToISODate(dayNum, monthNum, yearNum);
     
     if (editMode) {
-      // Update existing slot
+      // Update existing slot - store in 24-hour format
       setSlots(slots.map(s => 
         s.id === editingSlotId 
-          ? { ...s, date, startTime, endTime, label: label.trim() }
+          ? { ...s, date, startTime: startTime24, endTime: endTime24, label: label.trim() }
           : s
       ));
     } else {
-      // Add new slot
+      // Add new slot - store in 24-hour format
       const newSlot = {
         id: generateSlotId(slots),
         date,
-        startTime,
-        endTime,
+        startTime: startTime24,
+        endTime: endTime24,
         label: label.trim()
       };
       setSlots([...slots, newSlot]);
@@ -75,8 +106,9 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     setDay(d);
     setMonth(m);
     setYear(y);
-    setStartTime(slot.startTime);
-    setEndTime(slot.endTime);
+    // Convert from 24-hour storage to 12-hour display
+    setStartTime(convertTo12Hour(slot.startTime));
+    setEndTime(convertTo12Hour(slot.endTime));
     setShowModal(true);
   };
 
@@ -130,6 +162,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     setStartTime('');
     setEndTime('');
     setLabel('');
+    setTimeError('');
     setEditMode(false);
     setEditingSlotId(null);
   };
@@ -173,7 +206,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                     <div style={{ fontWeight: '600' }}>{formatDateHuman(slot.date)}</div>
                     <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>{getDayName(slot.date)}</div>
                   </td>
-                  <td>{slot.startTime} - {slot.endTime}</td>
+                  <td>{convertTo12Hour(slot.startTime)} - {convertTo12Hour(slot.endTime)}</td>
                   <td>
                     <span className={`badge ${assignedCount > 0 ? 'badge-success' : 'badge-warning'}`}>
                       {assignedCount} / {rooms.length}
@@ -246,7 +279,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
                   onChange={e => setMonth(e.target.value)}
                   style={{ flex: '0 0 100px' }}
                 >
-                  <option value="">Month</option>
+                  <option value="" disabled>Month</option>
                   {monthOptions.map(m => (
                     <option key={m.value} value={m.value}>{m.label}</option>
                   ))}
@@ -265,29 +298,37 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
               </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Start Time (HH:MM)</label>
-              <input
-                type="text"
-                className="form-input"
-                value={startTime}
-                onChange={e => setStartTime(e.target.value)}
-                placeholder="e.g., 09:00"
-                pattern="[0-9]{2}:[0-9]{2}"
-              />
-            </div>
+            <TimePicker
+              label="Start Time"
+              value={startTime}
+              onChange={(time) => {
+                setStartTime(time);
+                setTimeError('');
+              }}
+            />
 
-            <div className="form-group">
-              <label className="form-label">End Time (HH:MM)</label>
-              <input
-                type="text"
-                className="form-input"
-                value={endTime}
-                onChange={e => setEndTime(e.target.value)}
-                placeholder="e.g., 12:00"
-                pattern="[0-9]{2}:[0-9]{2}"
-              />
-            </div>
+            <TimePicker
+              label="End Time"
+              value={endTime}
+              onChange={(time) => {
+                setEndTime(time);
+                setTimeError('');
+              }}
+            />
+
+            {timeError && (
+              <div style={{ 
+                color: '#dc3545', 
+                fontSize: '14px', 
+                padding: '10px 12px', 
+                backgroundColor: '#fee',
+                borderRadius: '6px',
+                marginTop: '-4px',
+                fontWeight: '500'
+              }}>
+                ⚠️ {timeError}
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button className="btn btn-secondary" onClick={closeModal}>
