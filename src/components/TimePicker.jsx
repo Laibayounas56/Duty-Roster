@@ -9,7 +9,7 @@ const TimePicker = ({ value, onChange, label, placeholder }) => {
     const match = timeStr.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
     if (match) {
       return {
-        hour: match[1],
+        hour: String(match[1]).padStart(2, '0'), // Pad hour to match dropdown values
         minute: match[2],
         period: match[3].toUpperCase()
       };

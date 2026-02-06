@@ -17,8 +17,8 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTime, setStartTime] = useState('09:00 AM');
+  const [endTime, setEndTime] = useState('05:00 PM');
   const [label, setLabel] = useState('');
   const [timeError, setTimeError] = useState('');
   
@@ -159,12 +159,25 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     setDay('');
     setMonth('');
     setYear('');
-    setStartTime('');
-    setEndTime('');
+    setStartTime('09:00 AM');
+    setEndTime('05:00 PM');
     setLabel('');
     setTimeError('');
     setEditMode(false);
     setEditingSlotId(null);
+  };
+
+  const openAddModal = () => {
+    setEditMode(false);
+    setEditingSlotId(null);
+    setDay('');
+    setMonth('');
+    setYear('');
+    setStartTime('09:00 AM');
+    setEndTime('05:00 PM');
+    setLabel('');
+    setTimeError('');
+    setShowModal(true);
   };
 
   const closeModal = () => {
@@ -176,7 +189,7 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
     <div className="card">
       <div className="card-header">
         <h2 className="card-title"> Exam Slots</h2>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary" onClick={openAddModal}>
           + Add Slot
         </button>
       </div>
