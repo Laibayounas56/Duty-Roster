@@ -13,8 +13,12 @@ const PeopleManager = ({ people, setPeople }) => {
   const [name, setName] = useState('');
   const [type, setType] = useState(PERSON_TYPES.FACULTY);
   const [subRole, setSubRole] = useState(FACULTY_SUB_ROLES[0]);
+  const [daysMode, setDaysMode] = useState('ALL');
   const [preferredDays, setPreferredDays] = useState([]);
   const [maxDutyCount, setMaxDutyCount] = useState('');
+  const [showDaysSelector, setShowDaysSelector] = useState(false);
+  const [tempSelectedDays, setTempSelectedDays] = useState([]);
+  const [daySelectionError, setDaySelectionError] = useState('');
 
   const handleAdd = () => {
     if (!name.trim()) return;
@@ -24,6 +28,12 @@ const PeopleManager = ({ people, setPeople }) => {
       const dutyCountNum = parseInt(maxDutyCount, 10);
       if (!maxDutyCount || isNaN(dutyCountNum) || dutyCountNum <= 0) {
         return; // Silently prevent submission if invalid
+      }
+      
+      // Validate preferred days selection
+      if (daysMode === 'PREFERRED' && preferredDays.length === 0) {
+        setDaySelectionError('Please select at least one preferred day');
+        return;
       }
     }
     
@@ -36,7 +46,8 @@ const PeopleManager = ({ people, setPeople }) => {
               name: name.trim(),
               type,
               subRole: type === PERSON_TYPES.FACULTY ? subRole : null,
-              preferredDays: type === PERSON_TYPES.FACULTY ? preferredDays : [],
+              daysMode: type === PERSON_TYPES.FACULTY ? daysMode : null,
+              preferredDays: type === PERSON_TYPES.FACULTY ? (daysMode === 'ALL' ? [] : preferredDays) : [],
               maxDutyCount: type === PERSON_TYPES.FACULTY ? parseInt(maxDutyCount, 10) : null
             }
           : p
@@ -48,7 +59,8 @@ const PeopleManager = ({ people, setPeople }) => {
         name: name.trim(),
         type,
         subRole: type === PERSON_TYPES.FACULTY ? subRole : null,
-        preferredDays: type === PERSON_TYPES.FACULTY ? preferredDays : [],
+        daysMode: type === PERSON_TYPES.FACULTY ? daysMode : null,
+        preferredDays: type === PERSON_TYPES.FACULTY ? (daysMode === 'ALL' ? [] : preferredDays) : [],
         maxDutyCount: type === PERSON_TYPES.FACULTY ? parseInt(maxDutyCount, 10) : null
       };
       setPeople([...people, newPerson]);
@@ -63,6 +75,7 @@ const PeopleManager = ({ people, setPeople }) => {
     setName(person.name);
     setType(person.type);
     setSubRole(person.subRole || FACULTY_SUB_ROLES[0]);
+    setDaysMode(person.daysMode || (person.preferredDays && person.preferredDays.length > 0 ? 'PREFERRED' : 'ALL'));
     setPreferredDays(person.preferredDays || []);
     setMaxDutyCount(person.maxDutyCount ? person.maxDutyCount.toString() : '');
     setShowModal(true);
@@ -80,10 +93,36 @@ const PeopleManager = ({ people, setPeople }) => {
   };
 
   const toggleDay = (day) => {
-    if (preferredDays.includes(day)) {
-      setPreferredDays(preferredDays.filter(d => d !== day));
+    if (tempSelectedDays.includes(day)) {
+      setTempSelectedDays(tempSelectedDays.filter(d => d !== day));
     } else {
-      setPreferredDays([...preferredDays, day]);
+      setTempSelectedDays([...tempSelectedDays, day]);
+    }
+  };
+
+  const openDaysSelector = () => {
+    setTempSelectedDays(preferredDays);
+    setShowDaysSelector(true);
+    setDaySelectionError('');
+  };
+
+  const handleSaveDaysSelection = () => {
+    if (tempSelectedDays.length === 0) {
+      setDaySelectionError('Please select at least one day');
+      return;
+    }
+    setPreferredDays(tempSelectedDays);
+    setShowDaysSelector(false);
+    setDaySelectionError('');
+  };
+
+  const handleDaysModeChange = (mode) => {
+    setDaysMode(mode);
+    setDaySelectionError('');
+    if (mode === 'ALL') {
+      setPreferredDays([]);
+    } else if (mode === 'PREFERRED') {
+      openDaysSelector();
     }
   };
 
@@ -91,9 +130,11 @@ const PeopleManager = ({ people, setPeople }) => {
     setName('');
     setType(PERSON_TYPES.FACULTY);
     setSubRole(FACULTY_SUB_ROLES[0]);
+    setDaysMode('ALL');
     setPreferredDays([]);
     setMaxDutyCount('');
     setEditingPerson(null);
+    setDaySelectionError('');
   };
 
   const closeModal = () => {
@@ -199,7 +240,9 @@ const PeopleManager = ({ people, setPeople }) => {
                       </td>
                       <td>{person.subRole || '-'}</td>
                       <td>
-                        {formatDaysDisplay(person.preferredDays)}
+                        {person.daysMode === 'ALL' || !person.preferredDays || person.preferredDays.length === 0
+                          ? 'All Days'
+                          : formatDaysDisplay(person.preferredDays)}
                       </td>
                       <td>
                         <span className="badge badge-info">{person.maxDutyCount || 0}</span>
@@ -271,19 +314,33 @@ const PeopleManager = ({ people, setPeople }) => {
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">Preferred Days</label>
-                  <div className="checkbox-group">
-                    {DAYS_OF_WEEK.map(day => (
-                      <label key={day} className="checkbox-label">
-                        <input
-                          type="checkbox"
-                          checked={preferredDays.includes(day)}
-                          onChange={() => toggleDay(day)}
-                        />
-                        {day}
-                      </label>
-                    ))}
-                  </div>
+                  <label className="form-label">Days Preference</label>
+                  <select
+                    className="form-select"
+                    value={daysMode}
+                    onChange={e => handleDaysModeChange(e.target.value)}
+                  >
+                    <option value="ALL">All Days</option>
+                    <option value="PREFERRED">Preferred Days</option>
+                  </select>
+                  {daysMode === 'PREFERRED' && preferredDays.length > 0 && (
+                    <div style={{ marginTop: '8px', fontSize: '14px', color: '#059669', fontWeight: '500' }}>
+                      ✓ Selected: {formatDaysDisplay(preferredDays)}
+                    </div>
+                  )}
+                  {daySelectionError && (
+                    <div style={{ 
+                      color: '#dc3545', 
+                      fontSize: '14px', 
+                      padding: '10px 12px', 
+                      backgroundColor: '#fee',
+                      borderRadius: '6px',
+                      marginTop: '8px',
+                      fontWeight: '500'
+                    }}>
+                      ⚠️ {daySelectionError}
+                    </div>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -314,6 +371,89 @@ const PeopleManager = ({ people, setPeople }) => {
                 disabled={!name.trim() || (type === PERSON_TYPES.FACULTY && !maxDutyCount)}
               >
                 {editingPerson ? 'Update' : 'Add'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Days Selection Modal */}
+      {showDaysSelector && (
+        <div className="modal-overlay" onClick={() => setShowDaysSelector(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Select Preferred Days</h3>
+              <button className="modal-close" onClick={() => setShowDaysSelector(false)}>×</button>
+            </div>
+
+            <div style={{ marginBottom: '20px', color: '#64748B', fontSize: '14px', fontWeight: '600' }}>
+              Selected: {tempSelectedDays.length} / {DAYS_OF_WEEK.length}
+            </div>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              {DAYS_OF_WEEK.map(day => {
+                const isSelected = tempSelectedDays.includes(day);
+                return (
+                  <div
+                    key={day}
+                    onClick={() => toggleDay(day)}
+                    style={{
+                      padding: '16px 20px',
+                      borderRadius: '8px',
+                      border: isSelected ? '2px solid #3B82F6' : '2px solid #E2E8F0',
+                      background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                      color: isSelected ? '#1E3A8A' : '#64748B',
+                      fontWeight: isSelected ? '700' : '500',
+                      fontSize: '14px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      userSelect: 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor = '#93C5FD';
+                        e.currentTarget.style.background = '#F8FAFC';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelected) {
+                        e.currentTarget.style.borderColor = '#E2E8F0';
+                        e.currentTarget.style.background = '#FFFFFF';
+                      }
+                    }}
+                  >
+                    {day}
+                  </div>
+                );
+              })}
+            </div>
+
+            {daySelectionError && (
+              <div style={{ 
+                color: '#dc3545', 
+                fontSize: '14px', 
+                padding: '10px 12px', 
+                backgroundColor: '#fee',
+                borderRadius: '6px',
+                marginBottom: '16px',
+                fontWeight: '500'
+              }}>
+                ⚠️ {daySelectionError}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '24px' }}>
+              <button className="btn btn-secondary" onClick={() => setShowDaysSelector(false)}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" onClick={handleSaveDaysSelection}>
+                Save Selection
               </button>
             </div>
           </div>

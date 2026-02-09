@@ -63,11 +63,12 @@ export const createSlot = (date, startTime, endTime, label) => ({
   label
 });
 
-export const createPerson = (name, type, subRole = null, preferredDays = [], maxDutyCount = null) => ({
+export const createPerson = (name, type, subRole = null, daysMode = 'ALL', preferredDays = [], maxDutyCount = null) => ({
   id: Date.now() + Math.random(),
   name,
   type,
   subRole, // Only for Faculty
+  daysMode, // Only for Faculty: 'ALL' or 'PREFERRED'
   preferredDays, // Only for Faculty
   maxDutyCount // Only for Faculty - maximum duties they can be assigned
 });
@@ -84,6 +85,17 @@ export const getDayOfWeek = (dateString) => {
 export const isPersonAvailableOnDay = (person, dateString) => {
   if (person.type === PERSON_TYPES.STAFF) {
     return true; // Staff available all days
+  }
+  
+  // Handle new daysMode field (ALL or PREFERRED)
+  if (person.daysMode === 'ALL') {
+    return true;
+  }
+  
+  //Check preferredDays array
+  if (!person.preferredDays || person.preferredDays.length === 0) {
+  // if no days specified, assume all days
+    return person.daysMode ? false : true;
   }
   
   const dayOfWeek = getDayOfWeek(dateString);
