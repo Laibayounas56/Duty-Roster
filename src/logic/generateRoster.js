@@ -8,6 +8,7 @@ export const generateRoster = (slots, slotRooms, rooms, people) => {
   const roster = {};
   const dutyCount = {};
   const slotAssignments = {};
+  const warnings = [];
   
   // Start with zero duties for everyone
   people.forEach(person => {
@@ -43,7 +44,7 @@ export const generateRoster = (slots, slotRooms, rooms, people) => {
     });
   });
   
- // Fallback to fill pending slots (ignore preferred days)
+  // PHASE B: Fallback to fill incomplete slots (ignore preferred days)
   slots.forEach(slot => {
     const selectedRoomIds = slotRooms[slot.id] || [];
     const slotRoomsList = rooms.filter(room => selectedRoomIds.includes(room.id));
@@ -51,9 +52,8 @@ export const generateRoster = (slots, slotRooms, rooms, people) => {
     slotRoomsList.forEach(room => {
       const currentAssignment = roster[slot.id][room.id];
       
-      // Only process if assignment is pending
-      if (currentAssignment.status === 'pending') {
-        // Try to fill missing positions without preferred days restriction
+      // Process all incomplete assignments and try to fill remaining roles.
+      if (!isAssignmentComplete(currentAssignment)) {
         const updatedAssignment = fillPendingAssignment(
           currentAssignment,
           slot,
@@ -68,12 +68,53 @@ export const generateRoster = (slots, slotRooms, rooms, people) => {
       }
     });
   });
+
+  // Optional diagnostics: explain why any slot is still pending after fallback.
+  slots.forEach(slot => {
+    const selectedRoomIds = slotRooms[slot.id] || [];
+    selectedRoomIds.forEach(roomId => {
+      const assignment = roster[slot.id]?.[roomId];
+      if (!assignment || isAssignmentComplete(assignment)) {
+        return;
+      }
+
+      const availableFacultyCount = countAvailableFacultyIgnoringPreferred(
+        faculty,
+        slot,
+        slotAssignments[slot.id],
+        dutyCount
+      );
+      const availableStaffCount = countAvailableStaff(staff, slotAssignments[slot.id]);
+
+      const reason = availableFacultyCount === 0 && availableStaffCount === 0
+        ? 'No eligible staff/faculty left for this slot (all are already in this slot or at max duty).'
+        : availableFacultyCount === 0
+          ? 'No eligible faculty left for this slot (all are already in this slot or at max duty).'
+          : 'No valid role combination left after earlier assignments in this slot.';
+
+      warnings.push({
+        slotId: slot.id,
+        roomId,
+        reason
+      });
+
+      console.warn(
+        `[Roster Warning] Slot ${slot.id}, room ${roomId} is still pending. ${reason}`
+      );
+    });
+  });
   
   return {
     roster,
     dutyCount,
+    warnings,
     generatedAt: new Date().toISOString()
   };
+};
+
+const isAssignmentComplete = (assignment) => {
+  if (!assignment) return false;
+  return (assignment.staff && assignment.faculty1) || (assignment.faculty1 && assignment.faculty2);
 };
 
 // Assign people to one room
@@ -164,9 +205,9 @@ const findAvailableFaculty = (faculty, slot, slotAssigned, dutyCount, respectPre
 const fillPendingAssignment = (assignment, slot, room, staff, faculty, dutyCount, slotAssigned) => {
   const updatedAssignment = { ...assignment };
   
-  // If staff is missing and we have faculty slots to fill
-  if (!updatedAssignment.staff && !updatedAssignment.faculty1 && !updatedAssignment.faculty2) {
-    // Try staff first
+  // Always try staff first when missing. This lets us complete partial cases
+  // like faculty1-only by converting them to staff + faculty1.
+  if (!updatedAssignment.staff) {
     const availableStaff = findAvailableStaff(staff, slot, slotAssigned);
     if (availableStaff) {
       updatedAssignment.staff = availableStaff.id;
@@ -175,7 +216,7 @@ const fillPendingAssignment = (assignment, slot, room, staff, faculty, dutyCount
     }
   }
   
-  // Fill missing faculty positions (ignore preferred days)
+  // Fill missing faculty positions (ignore preferred days in fallback).
   if (!updatedAssignment.faculty1) {
     const faculty1 = findAvailableFaculty(faculty, slot, slotAssigned, dutyCount, false);
     if (faculty1) {
@@ -196,13 +237,26 @@ const fillPendingAssignment = (assignment, slot, room, staff, faculty, dutyCount
   }
   
   // Update status
-  if (updatedAssignment.staff && updatedAssignment.faculty1) {
-    updatedAssignment.status = 'complete';
-  } else if (updatedAssignment.faculty1 && updatedAssignment.faculty2) {
-    updatedAssignment.status = 'complete';
-  }
+  updatedAssignment.status = isAssignmentComplete(updatedAssignment) ? 'complete' : 'pending';
   
   return updatedAssignment;
+};
+
+const countAvailableFacultyIgnoringPreferred = (faculty, slot, slotAssigned, dutyCount) => {
+  return faculty.filter(fac => {
+    if (slotAssigned.has(fac.id)) return false;
+
+    const limit = fac.maxDutyCount;
+    if (limit !== null && limit !== undefined && dutyCount[fac.id] >= limit) {
+      return false;
+    }
+
+    return true;
+  }).length;
+};
+
+const countAvailableStaff = (staff, slotAssigned) => {
+  return staff.filter(staffMember => !slotAssigned.has(staffMember.id)).length;
 };
 
 // Calculate stats from roster
