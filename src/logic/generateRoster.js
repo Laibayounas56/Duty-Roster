@@ -177,11 +177,11 @@ const findAvailableStaff = (staff, slot, slotAssigned) => {
 
 // Find available faculty
 const findAvailableFaculty = (faculty, slot, slotAssigned, dutyCount, respectPreferredDays = true) => {
-  // Sort by maximum duty count in DESCENDING order - higher capacity faculty first
+  // Sort by maximum duty count in ASCENDING order - lower capacity faculty first
   const sortedFaculty = [...faculty].sort((a, b) => {
     const aMax = a.maxDutyCount || 0;
     const bMax = b.maxDutyCount || 0;
-    return bMax - aMax; // Descending order
+    return aMax - bMax; // Ascending order
   });
   
   return sortedFaculty.find(fac => {
