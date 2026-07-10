@@ -497,13 +497,14 @@
   .table td {
     border: none;
     border-bottom: 1px solid #E2E8F0;
-    position: relative;
-    padding: 12px 16px 12px 45%;
+    padding: 12px 16px;
     text-align: right;
     min-height: 48px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   
   .table td:last-child {
@@ -512,17 +513,17 @@
   
   .table td::before {
     content: attr(data-label);
-    position: absolute;
-    left: 16px;
-    width: 40%;
-    padding-right: 10px;
-    white-space: nowrap;
-    text-align: left;
     font-weight: 700;
     color: #64748B;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  
+  /* Ensure content wrappers inside td stay right-aligned if they wrap */
+  .table td > :not(::before) {
+    margin-left: auto;
   }
   
   .table tbody tr:nth-child(even) {
