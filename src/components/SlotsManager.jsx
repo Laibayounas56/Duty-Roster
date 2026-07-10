@@ -226,57 +226,61 @@ const SlotsManager = ({ slots, setSlots, rooms, slotRooms, setSlotRooms }) => {
           <div className="empty-state-text">No slots added yet. Click "Add Slot" to get started.</div>
         </div>
       ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Label</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Rooms Assigned</th>
-              <th style={{ width: '200px' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {slots.map(slot => {
-              const assignedCount = (slotRooms[slot.id] || []).length;
-              return (
-                <tr key={slot.id}>
-                  <td><strong>{slot.label}</strong></td>
-                  <td>
-                    <div style={{ fontWeight: '600' }}>{formatDateHuman(slot.date)}</div>
-                    <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>{getDayName(slot.date)}</div>
-                  </td>
-                  <td>{convertTo12Hour(slot.startTime)} - {convertTo12Hour(slot.endTime)}</td>
-                  <td>
-                    <span className={`badge ${assignedCount > 0 ? 'badge-success' : 'badge-warning'}`}>
-                      {assignedCount} / {rooms.length}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button 
-                        className="icon-btn" 
-                        onClick={() => openRoomSelector(slot)}
-                        disabled={rooms.length === 0}
-                      >
-                        🏢 Rooms
-                      </button>
-                      <button 
-                        className="icon-btn" 
-                        onClick={() => handleEdit(slot)}
-                      >
-                        ✏️
-                      </button>
-                      <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(slot.id)}>
-                        🗑️
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="table-responsive">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Rooms Assigned</th>
+                <th style={{ width: '200px' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {slots.map(slot => {
+                const assignedCount = (slotRooms[slot.id] || []).length;
+                return (
+                  <tr key={slot.id}>
+                    <td data-label="Label"><strong>{slot.label}</strong></td>
+                    <td data-label="Date">
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                        <div style={{ fontWeight: '600' }}>{formatDateHuman(slot.date)}</div>
+                        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>{getDayName(slot.date)}</div>
+                      </div>
+                    </td>
+                    <td data-label="Time">{convertTo12Hour(slot.startTime)} - {convertTo12Hour(slot.endTime)}</td>
+                    <td data-label="Rooms Assigned">
+                      <span className={`badge ${assignedCount > 0 ? 'badge-success' : 'badge-warning'}`}>
+                        {assignedCount} / {rooms.length}
+                      </span>
+                    </td>
+                    <td data-label="Actions">
+                      <div className="action-buttons">
+                        <button 
+                          className="icon-btn" 
+                          onClick={() => openRoomSelector(slot)}
+                          disabled={rooms.length === 0}
+                        >
+                          🏢 Rooms
+                        </button>
+                        <button 
+                          className="icon-btn" 
+                          onClick={() => handleEdit(slot)}
+                        >
+                          ✏️
+                        </button>
+                        <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(slot.id)}>
+                          🗑️
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Add Slot Modal */}

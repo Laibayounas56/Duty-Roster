@@ -113,31 +113,33 @@ const RoomsManager = ({ rooms, setRooms, slotRooms, setSlotRooms, generatedRoste
           <div className="empty-state-text">No rooms added yet. Click "Add Room" to get started.</div>
         </div>
       ) : (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Room Name</th>
-              <th style={{ width: '150px' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rooms.map(room => (
-              <tr key={room.id}>
-                <td>{room.name}</td>
-                <td>
-                  <div className="action-buttons">
-                    <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(room)}>
-                      ✏️
-                    </button>
-                    <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(room.id)}>
-                      🗑️
-                    </button>
-                  </div>
-                </td>
+        <div className="table-responsive">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Room Name</th>
+                <th style={{ width: '150px' }}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rooms.map(room => (
+                <tr key={room.id}>
+                  <td data-label="Room Name">{room.name}</td>
+                  <td data-label="Actions">
+                    <div className="action-buttons">
+                      <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(room)}>
+                        ✏️
+                      </button>
+                      <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(room.id)}>
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {showModal && (

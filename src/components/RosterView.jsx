@@ -129,48 +129,50 @@ const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
               </div>
             </div>
 
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Room</th>
-                  <th>Staff</th>
-                  <th>Faculty 1</th>
-                  <th>Faculty 2</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {roomIds.map(roomId => {
-                  const assignment = slotRoomAssignments[roomId];
-                  const room = getRoomById(roomId);
-                  const staff = assignment.staff ? getPersonById(assignment.staff) : null;
-                  const faculty1 = assignment.faculty1 ? getPersonById(assignment.faculty1) : null;
-                  const faculty2 = assignment.faculty2 ? getPersonById(assignment.faculty2) : null;
+            <div className="table-responsive">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Room</th>
+                    <th>Staff</th>
+                    <th>Faculty 1</th>
+                    <th>Faculty 2</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {roomIds.map(roomId => {
+                    const assignment = slotRoomAssignments[roomId];
+                    const room = getRoomById(roomId);
+                    const staff = assignment.staff ? getPersonById(assignment.staff) : null;
+                    const faculty1 = assignment.faculty1 ? getPersonById(assignment.faculty1) : null;
+                    const faculty2 = assignment.faculty2 ? getPersonById(assignment.faculty2) : null;
 
-                  return (
-                    <tr key={roomId}>
-                      <td>
-                        <strong>
-                          {room ? room.name : (
-                            <span style={{ color: '#dc3545' }} title={`Room ID: ${roomId} not found`}>
-                              Unknown Room
-                            </span>
-                          )}
-                        </strong>
-                      </td>
-                      <td>{staff ? staff.name : <span style={{ color: '#dc3545' }}>-</span>}</td>
-                      <td>{faculty1 ? `${faculty1.name} (${faculty1.subRole})` : <span style={{ color: '#dc3545' }}>-</span>}</td>
-                      <td>{faculty2 ? `${faculty2.name} (${faculty2.subRole})` : '-'}</td>
-                      <td>
-                        <span className={`badge ${assignment.status === 'complete' ? 'badge-success' : 'badge-warning'}`}>
-                          {assignment.status}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                    return (
+                      <tr key={roomId}>
+                        <td data-label="Room">
+                          <strong>
+                            {room ? room.name : (
+                              <span style={{ color: '#dc3545' }} title={`Room ID: ${roomId} not found`}>
+                                Unknown Room
+                              </span>
+                            )}
+                          </strong>
+                        </td>
+                        <td data-label="Staff">{staff ? staff.name : <span style={{ color: '#dc3545' }}>-</span>}</td>
+                        <td data-label="Faculty 1">{faculty1 ? `${faculty1.name} (${faculty1.subRole})` : <span style={{ color: '#dc3545' }}>-</span>}</td>
+                        <td data-label="Faculty 2">{faculty2 ? `${faculty2.name} (${faculty2.subRole})` : '-'}</td>
+                        <td data-label="Status">
+                          <span className={`badge ${assignment.status === 'complete' ? 'badge-success' : 'badge-warning'}`}>
+                            {assignment.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         );
       })}
@@ -179,49 +181,51 @@ const RosterView = ({ rosterData, slots, rooms, people, onBack }) => {
       <div className="card">
         <h2 className="card-title" style={{ fontSize: '20px' }}> Workload Summary</h2>
         
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Sub-Role</th>
-              <th>Max Duties</th>
-              <th>Duties Assigned</th>
-            </tr>
-          </thead>
-          <tbody>
-            {people
-              .filter(p => dutyCount[p.id] > 0)
-              .sort((a, b) => (dutyCount[b.id] || 0) - (dutyCount[a.id] || 0))
-              .map(person => (
-                <tr key={person.id}>
-                  <td><strong>{person.name}</strong></td>
-                  <td>
-                    <span className={`badge ${person.type === PERSON_TYPES.STAFF ? 'badge-info' : 'badge-success'}`}>
-                      {person.type}
-                    </span>
-                  </td>
-                  <td>{person.subRole || '-'}</td>
-                  <td>
-                    {person.type === PERSON_TYPES.STAFF ? (
-                      <span style={{ color: '#64748B',  }}>Unlimited</span>
-                    ) : (
-                      person.maxDutyCount ? (
-                        <strong style={{ color: '#1E3A8A' }}>{person.maxDutyCount}</strong>
+        <div className="table-responsive">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Sub-Role</th>
+                <th>Max Duties</th>
+                <th>Duties Assigned</th>
+              </tr>
+            </thead>
+            <tbody>
+              {people
+                .filter(p => dutyCount[p.id] > 0)
+                .sort((a, b) => (dutyCount[b.id] || 0) - (dutyCount[a.id] || 0))
+                .map(person => (
+                  <tr key={person.id}>
+                    <td data-label="Name"><strong>{person.name}</strong></td>
+                    <td data-label="Type">
+                      <span className={`badge ${person.type === PERSON_TYPES.STAFF ? 'badge-info' : 'badge-success'}`}>
+                        {person.type}
+                      </span>
+                    </td>
+                    <td data-label="Sub-Role">{person.subRole || '-'}</td>
+                    <td data-label="Max Duties">
+                      {person.type === PERSON_TYPES.STAFF ? (
+                        <span style={{ color: '#64748B',  }}>Unlimited</span>
                       ) : (
-                        <span style={{ color: '#64748B', }}>Unlimited</span>
-                      )
-                    )}
-                  </td>
-                  <td>
-                    <strong style={{ fontSize: '16px', color: '#1E3A8A' }}>
-                      {dutyCount[person.id] || 0}
-                    </strong>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+                        person.maxDutyCount ? (
+                          <strong style={{ color: '#1E3A8A' }}>{person.maxDutyCount}</strong>
+                        ) : (
+                          <span style={{ color: '#64748B', }}>Unlimited</span>
+                        )
+                      )}
+                    </td>
+                    <td data-label="Duties Assigned">
+                      <strong style={{ fontSize: '16px', color: '#1E3A8A' }}>
+                        {dutyCount[person.id] || 0}
+                      </strong>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       </div>
     </div>

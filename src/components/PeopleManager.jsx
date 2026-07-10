@@ -172,39 +172,41 @@ const PeopleManager = ({ people, setPeople }) => {
                 No staff members added yet
               </div>
             ) : (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Availability</th>
-                    <th style={{ width: '100px' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {people.filter(p => p.type === PERSON_TYPES.STAFF).map(person => (
-                    <tr key={person.id}>
-                      <td><strong>{person.name}</strong></td>
-                      <td>
-                        <span className="badge badge-info">
-                          {person.type}
-                        </span>
-                      </td>
-                      <td>All Days</td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(person)}>
-                            ✏️
-                            </button>
-                            <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(person.id)}>
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
+              <div className="table-responsive">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Availability</th>
+                      <th style={{ width: '100px' }}>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {people.filter(p => p.type === PERSON_TYPES.STAFF).map(person => (
+                      <tr key={person.id}>
+                        <td data-label="Name"><strong>{person.name}</strong></td>
+                        <td data-label="Type">
+                          <span className="badge badge-info">
+                            {person.type}
+                          </span>
+                        </td>
+                        <td data-label="Availability">All Days</td>
+                        <td data-label="Actions">
+                          <div className="action-buttons">
+                            <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(person)}>
+                              ✏️
+                              </button>
+                              <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(person.id)}>
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
 
@@ -218,49 +220,51 @@ const PeopleManager = ({ people, setPeople }) => {
                 No faculty members added yet
               </div>
             ) : (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Sub-Role</th>
-                    <th>Preferred Days</th>
-                    <th>Max Duties</th>
-                    <th style={{ width: '100px' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {people.filter(p => p.type === PERSON_TYPES.FACULTY).map(person => (
-                    <tr key={person.id}>
-                      <td><strong>{person.name}</strong></td>
-                      <td>
-                        <span className="badge badge-success">
-                          {person.type}
-                        </span>
-                      </td>
-                      <td>{person.subRole || '-'}</td>
-                      <td>
-                        {person.daysMode === 'ALL' || !person.preferredDays || person.preferredDays.length === 0
-                          ? 'All Days'
-                          : formatDaysDisplay(person.preferredDays)}
-                      </td>
-                      <td>
-                        <span className="badge badge-info">{person.maxDutyCount || 0}</span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(person)}>
-                            ✏️
-                          </button>
-                          <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(person.id)}>
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
+              <div className="table-responsive">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Sub-Role</th>
+                      <th>Preferred Days</th>
+                      <th>Max Duties</th>
+                      <th style={{ width: '100px' }}>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {people.filter(p => p.type === PERSON_TYPES.FACULTY).map(person => (
+                      <tr key={person.id}>
+                        <td data-label="Name"><strong>{person.name}</strong></td>
+                        <td data-label="Type">
+                          <span className="badge badge-success">
+                            {person.type}
+                          </span>
+                        </td>
+                        <td data-label="Sub-Role">{person.subRole || '-'}</td>
+                        <td data-label="Preferred Days">
+                          {person.daysMode === 'ALL' || !person.preferredDays || person.preferredDays.length === 0
+                            ? 'All Days'
+                            : formatDaysDisplay(person.preferredDays)}
+                        </td>
+                        <td data-label="Max Duties">
+                          <span className="badge badge-info">{person.maxDutyCount || 0}</span>
+                        </td>
+                        <td data-label="Actions">
+                          <div className="action-buttons">
+                            <button className="icon-btn icon-btn-edit" onClick={() => handleEdit(person)}>
+                              ✏️
+                            </button>
+                            <button className="icon-btn icon-btn-delete" onClick={() => handleDelete(person.id)}>
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         </>
